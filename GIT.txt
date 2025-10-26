@@ -7,6 +7,7 @@ git log
 git checkout -b develop (b de branch, crear rama)
 git checkout -b feat/nuevoParrafo 
 git checkout develop (cambiar de rama)
+git push origin develop
 git merge nombre (traer los cambios a otra rama)
 git branch -d nombre (eliminar)
 git remote add origin https://github.com/MaikelPlay/pruebaInicial.git (git remoto)
