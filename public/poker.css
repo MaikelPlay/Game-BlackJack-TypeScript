@@ -1,0 +1,97 @@
+.poker-table {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    height: 95vh;
+    max-height: 800px;
+    border-radius: 100px; /* Mesa más ovalada */
+}
+
+.players-container-poker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.player-area-poker {
+    position: absolute;
+    width: 120px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    padding: 5px;
+    color: white;
+}
+
+.player-area-poker .player-name {
+    font-weight: bold;
+}
+
+.player-area-poker .player-cards {
+    display: flex;
+    gap: 5px;
+}
+
+.player-area-poker .card {
+    width: 40px;
+    height: 60px;
+    font-size: 0.8rem;
+}
+
+.table-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.community-cards {
+    display: flex;
+    gap: 10px;
+}
+
+.community-cards .card {
+    width: 60px;
+    height: 90px;
+}
+
+.pot {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd700;
+    background-color: rgba(0,0,0,0.5);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.poker-actions {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.raise-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.raise-container input {
+    width: 80px;
+    font-size: 1rem;
+    padding: 5px;
+}

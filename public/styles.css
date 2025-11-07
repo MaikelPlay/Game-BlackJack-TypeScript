@@ -76,6 +76,13 @@ h2 {
     border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
+.players-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .card-area {
     position: relative;
     min-height: clamp(150px, 22vh, 220px);

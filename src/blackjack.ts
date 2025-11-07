@@ -1,4 +1,3 @@
-
 // Tipos
 type Palo = 'Corazones' | 'Diamantes' | 'Picas' | 'Tréboles';
 type Rango = '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K' | 'A';
@@ -48,9 +47,11 @@ class Jugador {
     public mano: Carta[] = [];
     public puntuacion: number = 0;
     public cartera: number = 1000;
+    public esCrupier: boolean = false;
 
-    constructor(carteraInicial: number = 1000) {
+    constructor(carteraInicial: number = 1000, esCrupier: boolean = false) {
         this.cartera = carteraInicial;
+        this.esCrupier = esCrupier;
     }
 
     public agregarCarta(carta: Carta): void {
@@ -87,14 +88,10 @@ class Jugador {
 // --- CLASE PARA MANEJAR LA INTERFAZ ---
 
 class InterfazUsuario {
-    // Elementos del DOM
-    private jugadorCartasDiv = document.getElementById('player-cards')!;
     private crupierCartasDiv = document.getElementById('dealer-cards')!;
-    private jugadorPuntuacionSpan = document.getElementById('player-score')!;
     private crupierPuntuacionSpan = document.getElementById('dealer-score')!;
+    private playersContainer = document.getElementById('players-container')!;
     private mensajesDiv = document.getElementById('messages')!;
-    private carteraSpan = document.getElementById('player-balance')!;
-    private apuestaActualSpan = document.getElementById('current-bet')!;
     
     // Botones
     private nuevaRondaButton = document.getElementById('new-round-button') as HTMLButtonElement;
@@ -104,21 +101,34 @@ class InterfazUsuario {
     private disminuirApuestaButton = document.getElementById('decrease-bet-button') as HTMLButtonElement;
     private apostarButton = document.getElementById('bet-button') as HTMLButtonElement;
 
-    public mostrarCarta(carta: Carta, esJugador: boolean, oculta: boolean = false, indice: number = 0, totalCartas: number = 1): void {
-        const contenedor = esJugador ? this.jugadorCartasDiv : this.crupierCartasDiv;
+    public crearAreasDeJugador(numeroJugadores: number): void {
+        this.playersContainer.innerHTML = '';
+        for (let i = 0; i < numeroJugadores; i++) {
+            const playerArea = document.createElement('div');
+            playerArea.classList.add('player-area');
+            playerArea.id = `player-area-${i}`;
+            playerArea.innerHTML = `
+                <h2>Jugador ${i + 1}: <span id="player-score-${i}">0</span></h2>
+                <div id="player-cards-${i}" class="card-area"></div>
+                <div class="balance">Cartera: $<span id="player-balance-${i}">0</span></div>
+            `;
+            this.playersContainer.appendChild(playerArea);
+        }
+    }
+
+    public mostrarCarta(carta: Carta, jugadorIndex: number, esCrupier: boolean, oculta: boolean = false, indice: number = 0, totalCartas: number = 1): void {
+        const contenedor = esCrupier ? this.crupierCartasDiv : document.getElementById(`player-cards-${jugadorIndex}`)!;
         const cartaDiv = document.createElement('div');
         cartaDiv.classList.add('card');
 
-        // Lógica para el abanico
         const anguloPorCarta = 5;
         const angulo = (indice - (totalCartas - 1) / 2) * anguloPorCarta;
-        const desplazamientoX = (indice - (totalCartas - 1) / 2) * 50; // Aumentado a 50 para más separación
+        const desplazamientoX = (indice - (totalCartas - 1) / 2) * 50;
         
         const transformacionBase = `rotate(${angulo}deg) translateX(${desplazamientoX}px)`;
         cartaDiv.style.transform = transformacionBase;
 
-        // Añadir interactividad solo a las cartas del jugador
-        if (esJugador && !oculta) {
+        if (!esCrupier && !oculta) {
             cartaDiv.addEventListener('mouseenter', () => {
                 cartaDiv.style.transform = `${transformacionBase} translateY(-20px) scale(1.1)`;
                 cartaDiv.style.zIndex = '100';
@@ -134,20 +144,36 @@ class InterfazUsuario {
         contenedor.appendChild(cartaDiv);
     }
 
-    public actualizarPuntuaciones(puntuacionJugador: number, puntuacionCrupier: number): void {
-        this.jugadorPuntuacionSpan.textContent = puntuacionJugador.toString();
+    public actualizarPuntuaciones(puntuaciones: number[], puntuacionCrupier: number): void {
+        puntuaciones.forEach((puntuacion, i) => {
+            const jugadorPuntuacionSpan = document.getElementById(`player-score-${i}`)!;
+            jugadorPuntuacionSpan.textContent = puntuacion.toString();
+        });
         this.crupierPuntuacionSpan.textContent = puntuacionCrupier.toString();
     }
 
-    public actualizarCartera(cartera: number): void { this.carteraSpan.textContent = cartera.toString(); }
-    public actualizarApuesta(apuesta: number): void { this.apuestaActualSpan.textContent = apuesta.toString(); }
+    public actualizarCarteras(carteras: number[]): void {
+        carteras.forEach((cartera, i) => {
+            const carteraSpan = document.getElementById(`player-balance-${i}`)!;
+            carteraSpan.textContent = cartera.toString();
+        });
+    }
+
+    public actualizarApuesta(apuesta: number): void {
+        const apuestaActualSpan = document.getElementById('current-bet')!;
+        apuestaActualSpan.textContent = apuesta.toString();
+    }
+
     public mostrarMensaje(mensaje: string): void { this.mensajesDiv.textContent = mensaje; }
 
-    public limpiarTablero(): void {
-        this.jugadorCartasDiv.innerHTML = '';
+    public limpiarTablero(numeroJugadores: number): void {
         this.crupierCartasDiv.innerHTML = '';
+        for (let i = 0; i < numeroJugadores; i++) {
+            const playerCardsDiv = document.getElementById(`player-cards-${i}`)!;
+            playerCardsDiv.innerHTML = '';
+        }
         this.mensajesDiv.textContent = '';
-        this.actualizarPuntuaciones(0, 0);
+        this.actualizarPuntuaciones(Array(numeroJugadores).fill(0), 0);
     }
 
     public configurarBotones(handlers: { [key: string]: () => void }): void {
@@ -167,16 +193,13 @@ class InterfazUsuario {
         const bettingArea = this.apostarButton.closest('.betting-area') as HTMLElement;
         const actionsArea = this.pedirCartaButton.closest('.actions') as HTMLElement;
 
-        // 1. Controlar visibilidad de las secciones principales
         bettingArea.style.display = apostando ? 'block' : 'none';
         actionsArea.style.display = (jugando || finRonda) ? 'block' : 'none';
 
-        // 2. Controlar visibilidad de los botones DENTRO de la sección de acciones
         this.pedirCartaButton.style.display = jugando ? 'inline-block' : 'none';
         this.plantarseButton.style.display = jugando ? 'inline-block' : 'none';
         this.nuevaRondaButton.style.display = finRonda ? 'inline-block' : 'none';
 
-        // 3. Gestionar el estado activado/desactivado (corrige el bug)
         this.pedirCartaButton.disabled = !jugando;
         this.plantarseButton.disabled = !jugando;
         this.nuevaRondaButton.disabled = !finRonda;
@@ -188,13 +211,18 @@ class InterfazUsuario {
 class Juego {
     private estado: EstadoJuego = 'APOSTANDO';
     private baraja = new Baraja();
-    public jugador: Jugador;
-    public crupier = new Jugador();
+    private jugadores: Jugador[] = [];
+    private crupier = new Jugador(0, true);
     private apuestaActual = 10;
     private readonly INCREMENTO_APUESTA = 10;
+    private jugadorActualIndex = 0;
 
-    constructor(private ui: InterfazUsuario, carteraInicial: number) {
-        this.jugador = new Jugador(carteraInicial);
+    constructor(private ui: InterfazUsuario, private numeroJugadores: number, private carteraInicial: number) {
+        this.ui.crearAreasDeJugador(numeroJugadores);
+        for (let i = 0; i < numeroJugadores; i++) {
+            this.jugadores.push(new Jugador(carteraInicial));
+        }
+
         this.ui.configurarBotones({
             nuevaRonda: () => this.nuevaRonda(),
             pedirCarta: () => this.pedirCarta(),
@@ -213,18 +241,20 @@ class Juego {
 
     public nuevaRonda(): void {
         this.cambiarEstado('APOSTANDO');
-        this.jugador.reiniciarMano();
+        this.jugadores.forEach(j => j.reiniciarMano());
         this.crupier.reiniciarMano();
         this.baraja.reiniciar();
-        this.ui.limpiarTablero();
-        this.ui.actualizarCartera(this.jugador.cartera);
+        this.ui.limpiarTablero(this.numeroJugadores);
+        this.ui.actualizarCarteras(this.jugadores.map(j => j.cartera));
         this.ui.actualizarApuesta(this.apuestaActual);
         this.ui.mostrarMensaje('Realiza tu apuesta para empezar la ronda.');
+        this.jugadorActualIndex = 0;
     }
 
     private aumentarApuesta(): void {
         if (this.estado !== 'APOSTANDO') return;
-        if (this.apuestaActual + this.INCREMENTO_APUESTA <= this.jugador.cartera) {
+        // Simplificado: la apuesta es la misma para todos
+        if (this.apuestaActual + this.INCREMENTO_APUESTA <= Math.min(...this.jugadores.map(j => j.cartera))) {
             this.apuestaActual += this.INCREMENTO_APUESTA;
             this.ui.actualizarApuesta(this.apuestaActual);
         }
@@ -240,102 +270,141 @@ class Juego {
 
     public realizarApuesta(): void {
         if (this.estado !== 'APOSTANDO') return;
-        if (!this.jugador.apostar(this.apuestaActual)) {
-            this.ui.mostrarMensaje('No tienes suficiente dinero para apostar esa cantidad.');
+        
+        let todosPuedenApostar = true;
+        this.jugadores.forEach(jugador => {
+            if (!jugador.apostar(this.apuestaActual)) {
+                todosPuedenApostar = false;
+            }
+        });
+
+        if (!todosPuedenApostar) {
+            this.ui.mostrarMensaje('Alguno de los jugadores no tiene suficiente dinero.');
+            // Devolver dinero a los que sí pudieron
+            this.jugadores.forEach(j => j.ganar(this.apuestaActual));
             return;
         }
 
         this.cambiarEstado('JUGANDO');
-        this.ui.actualizarCartera(this.jugador.cartera);
-        this.ui.mostrarMensaje('¿Pedir carta o plantarse?');
+        this.ui.actualizarCarteras(this.jugadores.map(j => j.cartera));
+        this.ui.mostrarMensaje(`Turno del Jugador ${this.jugadorActualIndex + 1}. ¿Pedir carta o plantarse?`);
 
         // Repartir cartas
-        this.jugador.agregarCarta(this.baraja.robar());
-        this.crupier.agregarCarta(this.baraja.robar());
-        this.jugador.agregarCarta(this.baraja.robar());
-        this.crupier.agregarCarta(this.baraja.robar());
+        for (let i = 0; i < 2; i++) {
+            for (let j = 0; j < this.jugadores.length; j++) {
+                this.jugadores[j].agregarCarta(this.baraja.robar());
+            }
+            this.crupier.agregarCarta(this.baraja.robar());
+        }
 
         this.actualizarVista();
-        
-        // Comprobar si hay Blackjack
-        if (this.jugador.puntuacion === 21) {
-            this.plantarse();
+        this.comprobarBlackjack();
+    }
+
+    private siguienteTurno(): void {
+        if (this.jugadorActualIndex < this.numeroJugadores - 1) {
+            this.jugadorActualIndex++;
+            this.ui.mostrarMensaje(`Turno del Jugador ${this.jugadorActualIndex + 1}. ¿Pedir carta o plantarse?`);
+            if (this.jugadores[this.jugadorActualIndex].puntuacion === 21) {
+                this.siguienteTurno();
+            }
+        } else {
+            this.turnoDelCrupier();
         }
     }
 
     private actualizarVista(ocultarCartaCrupier: boolean = true): void {
-        this.ui.limpiarTablero();
-        const totalCartasJugador = this.jugador.mano.length;
-        this.jugador.mano.forEach((carta, i) => this.ui.mostrarCarta(carta, true, false, i, totalCartasJugador));
+        this.ui.limpiarTablero(this.numeroJugadores);
+        this.jugadores.forEach((jugador, i) => {
+            jugador.mano.forEach((carta, j) => {
+                this.ui.mostrarCarta(carta, i, false, false, j, jugador.mano.length);
+            });
+        });
         
-        const totalCartasCrupier = this.crupier.mano.length;
-        this.crupier.mano.forEach((carta, i) => this.ui.mostrarCarta(carta, false, ocultarCartaCrupier && i === 0, i, totalCartasCrupier));
+        this.crupier.mano.forEach((carta, i) => {
+            this.ui.mostrarCarta(carta, -1, true, ocultarCartaCrupier && i === 0, i, this.crupier.mano.length);
+        });
         
         const puntCrupier = ocultarCartaCrupier ? (this.crupier.mano[1]?.valor ?? 0) : this.crupier.puntuacion;
-        this.ui.actualizarPuntuaciones(this.jugador.puntuacion, puntCrupier);
+        this.ui.actualizarPuntuaciones(this.jugadores.map(j => j.puntuacion), puntCrupier);
     }
 
     public pedirCarta(): void {
         if (this.estado !== 'JUGANDO') return;
-        this.jugador.agregarCarta(this.baraja.robar());
+        const jugadorActual = this.jugadores[this.jugadorActualIndex];
+        jugadorActual.agregarCarta(this.baraja.robar());
         this.actualizarVista();
-        if (this.jugador.puntuacion > 21) {
-            this.finalizarRonda('¡Te has pasado! Gana el crupier.', false);
+        if (jugadorActual.puntuacion > 21) {
+            this.ui.mostrarMensaje(`Jugador ${this.jugadorActualIndex + 1} se ha pasado.`);
+            this.siguienteTurno();
         }
     }
 
-    public async plantarse(): Promise<void> {
+    public plantarse(): void {
         if (this.estado !== 'JUGANDO') return;
-        this.cambiarEstado('FIN_RONDA');
+        this.siguienteTurno();
+    }
 
-        // Turno del crupier
+    private comprobarBlackjack(): void {
+        let todosHanJugado = true;
+        this.jugadores.forEach((jugador, i) => {
+            if (jugador.puntuacion !== 21) {
+                todosHanJugado = false;
+            }
+        });
+
+        if(todosHanJugado) {
+            this.turnoDelCrupier();
+        }
+    }
+
+    private async turnoDelCrupier(): Promise<void> {
+        this.cambiarEstado('FIN_RONDA');
         this.actualizarVista(false);
+
         while (this.crupier.puntuacion < 17) {
             await this.sleep(1000);
             this.crupier.agregarCarta(this.baraja.robar());
             this.actualizarVista(false);
         }
 
-        this.determinarGanador();
+        this.determinarGanadores();
     }
 
-    private determinarGanador(): void {
-        const puntJugador = this.jugador.puntuacion;
+    private determinarGanadores(): void {
         const puntCrupier = this.crupier.puntuacion;
-        const esBlackjack = puntJugador === 21 && this.jugador.mano.length === 2;
+        let mensajeFinal = '';
 
-        if (puntJugador > 21) {
-            return this.finalizarRonda('¡Te has pasado! Gana el crupier.', false);
-        }
-        if (esBlackjack && puntCrupier !== 21) {
-            return this.finalizarRonda('¡Blackjack! ¡Has ganado!', true, 1.5); // Pago 3:2
-        }
-        if (puntCrupier > 21 || puntJugador > puntCrupier) {
-            return this.finalizarRonda('¡Has ganado la ronda!', true);
-        }
-        if (puntCrupier > puntJugador) {
-            return this.finalizarRonda('Gana el crupier.', false);
-        }
-        if (puntJugador === puntCrupier) {
-            return this.finalizarRonda('Empate.', true, 0, true);
-        }
+        this.jugadores.forEach((jugador, i) => {
+            const puntJugador = jugador.puntuacion;
+            const esBlackjack = puntJugador === 21 && jugador.mano.length === 2;
+
+            if (puntJugador > 21) {
+                mensajeFinal += `Jugador ${i + 1}: Pierde. `;
+            } else if (esBlackjack && puntCrupier !== 21) {
+                jugador.ganar(this.apuestaActual + (this.apuestaActual * 1.5));
+                mensajeFinal += `Jugador ${i + 1}: ¡Blackjack! Gana. `;
+            } else if (puntCrupier > 21 || puntJugador > puntCrupier) {
+                jugador.ganar(this.apuestaActual * 2);
+                mensajeFinal += `Jugador ${i + 1}: Gana. `;
+            } else if (puntCrupier > puntJugador) {
+                mensajeFinal += `Jugador ${i + 1}: Pierde. `;
+            } else if (puntJugador === puntCrupier) {
+                jugador.ganar(this.apuestaActual);
+                mensajeFinal += `Jugador ${i + 1}: Empate. `;
+            }
+        });
+
+        this.finalizarRonda(mensajeFinal);
     }
 
-    private finalizarRonda(mensaje: string, jugadorGana: boolean, multiplicadorGanancia = 1, esEmpate = false): void {
+    private finalizarRonda(mensaje: string): void {
         this.cambiarEstado('FIN_RONDA');
         this.ui.mostrarMensaje(mensaje);
+        this.ui.actualizarCarteras(this.jugadores.map(j => j.cartera));
 
-        if (esEmpate) {
-            this.jugador.ganar(this.apuestaActual); // Devolver la apuesta
-        } else if (jugadorGana) {
-            this.jugador.ganar(this.apuestaActual + (this.apuestaActual * multiplicadorGanancia));
-        }
-        
-        this.ui.actualizarCartera(this.jugador.cartera);
-
-        if (this.jugador.cartera === 0) {
-            this.ui.mostrarMensaje('Te has quedado sin dinero. ¡Fin del juego!');
-            // Aquí se podrían deshabilitar todos los botones permanentemente
+        if (this.jugadores.every(j => j.cartera === 0)) {
+            this.ui.mostrarMensaje('Todos los jugadores se han quedado sin dinero. ¡Fin del juego!');
         }
     }
 
@@ -349,5 +418,6 @@ class Juego {
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const saldoInicial = parseInt(urlParams.get('saldo') || '1000', 10);
-    new Juego(new InterfazUsuario(), saldoInicial);
+    const numeroJugadores = parseInt(urlParams.get('jugadores') || '1', 10);
+    new Juego(new InterfazUsuario(), numeroJugadores, saldoInicial);
 });

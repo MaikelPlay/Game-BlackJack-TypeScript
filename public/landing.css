@@ -81,6 +81,30 @@
     box-shadow: 0 0 15px #ffd700;
 }
 
+.player-selection {
+    margin-bottom: 3rem;
+    animation: fadeInUp 1.5s ease-out 1.2s backwards;
+}
+
+.player-selection label {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    color: #eee;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.player-selection select {
+    padding: 0.8rem;
+    font-size: 1.5rem;
+    width: 200px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid #ffd700;
+    color: #fff;
+    border-radius: 5px;
+    font-family: 'Cinzel', serif;
+}
+
 #start-game-button {
     padding: 1.2rem 4rem;
     font-size: 2rem;

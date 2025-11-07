@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="poker.css">
+    <script type="module" src="../dist/poker.js" defer></script>
+</head>
+<body>
+    <div class="game-container poker-table">
+        <h1>Poker Texas Hold'em</h1>
+        
+        <div id="messages" class="messages"></div>
+
+        <div class="table-center">
+            <div id="community-cards" class="community-cards"></div>
+            <div id="pot" class="pot">Bote: $0</div>
+        </div>
+
+        <div id="players-container" class="players-container-poker"></div>
+
+        <div class="actions poker-actions">
+            <button id="fold-button">Retirarse</button>
+            <button id="check-button">Pasar</button>
+            <button id="call-button">Igualar</button>
+            <div class="raise-container">
+                <button id="raise-button">Subir</button>
+                <input type="number" id="raise-amount" value="20" min="20" step="10">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -39,11 +39,13 @@ class Baraja {
     robar() { return this.cartas.pop(); }
 }
 class Jugador {
-    constructor(carteraInicial = 1000) {
+    constructor(carteraInicial = 1000, esCrupier = false) {
         this.mano = [];
         this.puntuacion = 0;
         this.cartera = 1000;
+        this.esCrupier = false;
         this.cartera = carteraInicial;
+        this.esCrupier = esCrupier;
     }
     agregarCarta(carta) {
         this.mano.push(carta);
@@ -75,14 +77,10 @@ class Jugador {
 // --- CLASE PARA MANEJAR LA INTERFAZ ---
 class InterfazUsuario {
     constructor() {
-        // Elementos del DOM
-        this.jugadorCartasDiv = document.getElementById('player-cards');
         this.crupierCartasDiv = document.getElementById('dealer-cards');
-        this.jugadorPuntuacionSpan = document.getElementById('player-score');
         this.crupierPuntuacionSpan = document.getElementById('dealer-score');
+        this.playersContainer = document.getElementById('players-container');
         this.mensajesDiv = document.getElementById('messages');
-        this.carteraSpan = document.getElementById('player-balance');
-        this.apuestaActualSpan = document.getElementById('current-bet');
         // Botones
         this.nuevaRondaButton = document.getElementById('new-round-button');
         this.pedirCartaButton = document.getElementById('hit-button');
@@ -91,18 +89,30 @@ class InterfazUsuario {
         this.disminuirApuestaButton = document.getElementById('decrease-bet-button');
         this.apostarButton = document.getElementById('bet-button');
     }
-    mostrarCarta(carta, esJugador, oculta = false, indice = 0, totalCartas = 1) {
-        const contenedor = esJugador ? this.jugadorCartasDiv : this.crupierCartasDiv;
+    crearAreasDeJugador(numeroJugadores) {
+        this.playersContainer.innerHTML = '';
+        for (let i = 0; i < numeroJugadores; i++) {
+            const playerArea = document.createElement('div');
+            playerArea.classList.add('player-area');
+            playerArea.id = `player-area-${i}`;
+            playerArea.innerHTML = `
+                <h2>Jugador ${i + 1}: <span id="player-score-${i}">0</span></h2>
+                <div id="player-cards-${i}" class="card-area"></div>
+                <div class="balance">Cartera: $<span id="player-balance-${i}">0</span></div>
+            `;
+            this.playersContainer.appendChild(playerArea);
+        }
+    }
+    mostrarCarta(carta, jugadorIndex, esCrupier, oculta = false, indice = 0, totalCartas = 1) {
+        const contenedor = esCrupier ? this.crupierCartasDiv : document.getElementById(`player-cards-${jugadorIndex}`);
         const cartaDiv = document.createElement('div');
         cartaDiv.classList.add('card');
-        // Lógica para el abanico
         const anguloPorCarta = 5;
         const angulo = (indice - (totalCartas - 1) / 2) * anguloPorCarta;
-        const desplazamientoX = (indice - (totalCartas - 1) / 2) * 50; // Aumentado a 50 para más separación
+        const desplazamientoX = (indice - (totalCartas - 1) / 2) * 50;
         const transformacionBase = `rotate(${angulo}deg) translateX(${desplazamientoX}px)`;
         cartaDiv.style.transform = transformacionBase;
-        // Añadir interactividad solo a las cartas del jugador
-        if (esJugador && !oculta) {
+        if (!esCrupier && !oculta) {
             cartaDiv.addEventListener('mouseenter', () => {
                 cartaDiv.style.transform = `${transformacionBase} translateY(-20px) scale(1.1)`;
                 cartaDiv.style.zIndex = '100';
@@ -117,18 +127,32 @@ class InterfazUsuario {
             cartaDiv.classList.add('hidden');
         contenedor.appendChild(cartaDiv);
     }
-    actualizarPuntuaciones(puntuacionJugador, puntuacionCrupier) {
-        this.jugadorPuntuacionSpan.textContent = puntuacionJugador.toString();
+    actualizarPuntuaciones(puntuaciones, puntuacionCrupier) {
+        puntuaciones.forEach((puntuacion, i) => {
+            const jugadorPuntuacionSpan = document.getElementById(`player-score-${i}`);
+            jugadorPuntuacionSpan.textContent = puntuacion.toString();
+        });
         this.crupierPuntuacionSpan.textContent = puntuacionCrupier.toString();
     }
-    actualizarCartera(cartera) { this.carteraSpan.textContent = cartera.toString(); }
-    actualizarApuesta(apuesta) { this.apuestaActualSpan.textContent = apuesta.toString(); }
+    actualizarCarteras(carteras) {
+        carteras.forEach((cartera, i) => {
+            const carteraSpan = document.getElementById(`player-balance-${i}`);
+            carteraSpan.textContent = cartera.toString();
+        });
+    }
+    actualizarApuesta(apuesta) {
+        const apuestaActualSpan = document.getElementById('current-bet');
+        apuestaActualSpan.textContent = apuesta.toString();
+    }
     mostrarMensaje(mensaje) { this.mensajesDiv.textContent = mensaje; }
-    limpiarTablero() {
-        this.jugadorCartasDiv.innerHTML = '';
+    limpiarTablero(numeroJugadores) {
         this.crupierCartasDiv.innerHTML = '';
+        for (let i = 0; i < numeroJugadores; i++) {
+            const playerCardsDiv = document.getElementById(`player-cards-${i}`);
+            playerCardsDiv.innerHTML = '';
+        }
         this.mensajesDiv.textContent = '';
-        this.actualizarPuntuaciones(0, 0);
+        this.actualizarPuntuaciones(Array(numeroJugadores).fill(0), 0);
     }
     configurarBotones(handlers) {
         this.nuevaRondaButton.addEventListener('click', handlers.nuevaRonda);
@@ -144,14 +168,11 @@ class InterfazUsuario {
         const finRonda = estado === 'FIN_RONDA';
         const bettingArea = this.apostarButton.closest('.betting-area');
         const actionsArea = this.pedirCartaButton.closest('.actions');
-        // 1. Controlar visibilidad de las secciones principales
         bettingArea.style.display = apostando ? 'block' : 'none';
         actionsArea.style.display = (jugando || finRonda) ? 'block' : 'none';
-        // 2. Controlar visibilidad de los botones DENTRO de la sección de acciones
         this.pedirCartaButton.style.display = jugando ? 'inline-block' : 'none';
         this.plantarseButton.style.display = jugando ? 'inline-block' : 'none';
         this.nuevaRondaButton.style.display = finRonda ? 'inline-block' : 'none';
-        // 3. Gestionar el estado activado/desactivado (corrige el bug)
         this.pedirCartaButton.disabled = !jugando;
         this.plantarseButton.disabled = !jugando;
         this.nuevaRondaButton.disabled = !finRonda;
@@ -159,14 +180,21 @@ class InterfazUsuario {
 }
 // --- CLASE PRINCIPAL DEL JUEGO ---
 class Juego {
-    constructor(ui, carteraInicial) {
+    constructor(ui, numeroJugadores, carteraInicial) {
         this.ui = ui;
+        this.numeroJugadores = numeroJugadores;
+        this.carteraInicial = carteraInicial;
         this.estado = 'APOSTANDO';
         this.baraja = new Baraja();
-        this.crupier = new Jugador();
+        this.jugadores = [];
+        this.crupier = new Jugador(0, true);
         this.apuestaActual = 10;
         this.INCREMENTO_APUESTA = 10;
-        this.jugador = new Jugador(carteraInicial);
+        this.jugadorActualIndex = 0;
+        this.ui.crearAreasDeJugador(numeroJugadores);
+        for (let i = 0; i < numeroJugadores; i++) {
+            this.jugadores.push(new Jugador(carteraInicial));
+        }
         this.ui.configurarBotones({
             nuevaRonda: () => this.nuevaRonda(),
             pedirCarta: () => this.pedirCarta(),
@@ -183,18 +211,20 @@ class Juego {
     }
     nuevaRonda() {
         this.cambiarEstado('APOSTANDO');
-        this.jugador.reiniciarMano();
+        this.jugadores.forEach(j => j.reiniciarMano());
         this.crupier.reiniciarMano();
         this.baraja.reiniciar();
-        this.ui.limpiarTablero();
-        this.ui.actualizarCartera(this.jugador.cartera);
+        this.ui.limpiarTablero(this.numeroJugadores);
+        this.ui.actualizarCarteras(this.jugadores.map(j => j.cartera));
         this.ui.actualizarApuesta(this.apuestaActual);
         this.ui.mostrarMensaje('Realiza tu apuesta para empezar la ronda.');
+        this.jugadorActualIndex = 0;
     }
     aumentarApuesta() {
         if (this.estado !== 'APOSTANDO')
             return;
-        if (this.apuestaActual + this.INCREMENTO_APUESTA <= this.jugador.cartera) {
+        // Simplificado: la apuesta es la misma para todos
+        if (this.apuestaActual + this.INCREMENTO_APUESTA <= Math.min(...this.jugadores.map(j => j.cartera))) {
             this.apuestaActual += this.INCREMENTO_APUESTA;
             this.ui.actualizarApuesta(this.apuestaActual);
         }
@@ -210,88 +240,126 @@ class Juego {
     realizarApuesta() {
         if (this.estado !== 'APOSTANDO')
             return;
-        if (!this.jugador.apostar(this.apuestaActual)) {
-            this.ui.mostrarMensaje('No tienes suficiente dinero para apostar esa cantidad.');
+        let todosPuedenApostar = true;
+        this.jugadores.forEach(jugador => {
+            if (!jugador.apostar(this.apuestaActual)) {
+                todosPuedenApostar = false;
+            }
+        });
+        if (!todosPuedenApostar) {
+            this.ui.mostrarMensaje('Alguno de los jugadores no tiene suficiente dinero.');
+            // Devolver dinero a los que sí pudieron
+            this.jugadores.forEach(j => j.ganar(this.apuestaActual));
             return;
         }
         this.cambiarEstado('JUGANDO');
-        this.ui.actualizarCartera(this.jugador.cartera);
-        this.ui.mostrarMensaje('¿Pedir carta o plantarse?');
+        this.ui.actualizarCarteras(this.jugadores.map(j => j.cartera));
+        this.ui.mostrarMensaje(`Turno del Jugador ${this.jugadorActualIndex + 1}. ¿Pedir carta o plantarse?`);
         // Repartir cartas
-        this.jugador.agregarCarta(this.baraja.robar());
-        this.crupier.agregarCarta(this.baraja.robar());
-        this.jugador.agregarCarta(this.baraja.robar());
-        this.crupier.agregarCarta(this.baraja.robar());
+        for (let i = 0; i < 2; i++) {
+            for (let j = 0; j < this.jugadores.length; j++) {
+                this.jugadores[j].agregarCarta(this.baraja.robar());
+            }
+            this.crupier.agregarCarta(this.baraja.robar());
+        }
         this.actualizarVista();
-        // Comprobar si hay Blackjack
-        if (this.jugador.puntuacion === 21) {
-            this.plantarse();
+        this.comprobarBlackjack();
+    }
+    siguienteTurno() {
+        if (this.jugadorActualIndex < this.numeroJugadores - 1) {
+            this.jugadorActualIndex++;
+            this.ui.mostrarMensaje(`Turno del Jugador ${this.jugadorActualIndex + 1}. ¿Pedir carta o plantarse?`);
+            if (this.jugadores[this.jugadorActualIndex].puntuacion === 21) {
+                this.siguienteTurno();
+            }
+        }
+        else {
+            this.turnoDelCrupier();
         }
     }
     actualizarVista(ocultarCartaCrupier = true) {
-        this.ui.limpiarTablero();
-        const totalCartasJugador = this.jugador.mano.length;
-        this.jugador.mano.forEach((carta, i) => this.ui.mostrarCarta(carta, true, false, i, totalCartasJugador));
-        const totalCartasCrupier = this.crupier.mano.length;
-        this.crupier.mano.forEach((carta, i) => this.ui.mostrarCarta(carta, false, ocultarCartaCrupier && i === 0, i, totalCartasCrupier));
+        this.ui.limpiarTablero(this.numeroJugadores);
+        this.jugadores.forEach((jugador, i) => {
+            jugador.mano.forEach((carta, j) => {
+                this.ui.mostrarCarta(carta, i, false, false, j, jugador.mano.length);
+            });
+        });
+        this.crupier.mano.forEach((carta, i) => {
+            this.ui.mostrarCarta(carta, -1, true, ocultarCartaCrupier && i === 0, i, this.crupier.mano.length);
+        });
         const puntCrupier = ocultarCartaCrupier ? (this.crupier.mano[1]?.valor ?? 0) : this.crupier.puntuacion;
-        this.ui.actualizarPuntuaciones(this.jugador.puntuacion, puntCrupier);
+        this.ui.actualizarPuntuaciones(this.jugadores.map(j => j.puntuacion), puntCrupier);
     }
     pedirCarta() {
         if (this.estado !== 'JUGANDO')
             return;
-        this.jugador.agregarCarta(this.baraja.robar());
+        const jugadorActual = this.jugadores[this.jugadorActualIndex];
+        jugadorActual.agregarCarta(this.baraja.robar());
         this.actualizarVista();
-        if (this.jugador.puntuacion > 21) {
-            this.finalizarRonda('¡Te has pasado! Gana el crupier.', false);
+        if (jugadorActual.puntuacion > 21) {
+            this.ui.mostrarMensaje(`Jugador ${this.jugadorActualIndex + 1} se ha pasado.`);
+            this.siguienteTurno();
         }
     }
-    async plantarse() {
+    plantarse() {
         if (this.estado !== 'JUGANDO')
             return;
+        this.siguienteTurno();
+    }
+    comprobarBlackjack() {
+        let todosHanJugado = true;
+        this.jugadores.forEach((jugador, i) => {
+            if (jugador.puntuacion !== 21) {
+                todosHanJugado = false;
+            }
+        });
+        if (todosHanJugado) {
+            this.turnoDelCrupier();
+        }
+    }
+    async turnoDelCrupier() {
         this.cambiarEstado('FIN_RONDA');
-        // Turno del crupier
         this.actualizarVista(false);
         while (this.crupier.puntuacion < 17) {
             await this.sleep(1000);
             this.crupier.agregarCarta(this.baraja.robar());
             this.actualizarVista(false);
         }
-        this.determinarGanador();
+        this.determinarGanadores();
     }
-    determinarGanador() {
-        const puntJugador = this.jugador.puntuacion;
+    determinarGanadores() {
         const puntCrupier = this.crupier.puntuacion;
-        const esBlackjack = puntJugador === 21 && this.jugador.mano.length === 2;
-        if (puntJugador > 21) {
-            return this.finalizarRonda('¡Te has pasado! Gana el crupier.', false);
-        }
-        if (esBlackjack && puntCrupier !== 21) {
-            return this.finalizarRonda('¡Blackjack! ¡Has ganado!', true, 1.5); // Pago 3:2
-        }
-        if (puntCrupier > 21 || puntJugador > puntCrupier) {
-            return this.finalizarRonda('¡Has ganado la ronda!', true);
-        }
-        if (puntCrupier > puntJugador) {
-            return this.finalizarRonda('Gana el crupier.', false);
-        }
-        if (puntJugador === puntCrupier) {
-            return this.finalizarRonda('Empate.', true, 0, true);
-        }
+        let mensajeFinal = '';
+        this.jugadores.forEach((jugador, i) => {
+            const puntJugador = jugador.puntuacion;
+            const esBlackjack = puntJugador === 21 && jugador.mano.length === 2;
+            if (puntJugador > 21) {
+                mensajeFinal += `Jugador ${i + 1}: Pierde. `;
+            }
+            else if (esBlackjack && puntCrupier !== 21) {
+                jugador.ganar(this.apuestaActual + (this.apuestaActual * 1.5));
+                mensajeFinal += `Jugador ${i + 1}: ¡Blackjack! Gana. `;
+            }
+            else if (puntCrupier > 21 || puntJugador > puntCrupier) {
+                jugador.ganar(this.apuestaActual * 2);
+                mensajeFinal += `Jugador ${i + 1}: Gana. `;
+            }
+            else if (puntCrupier > puntJugador) {
+                mensajeFinal += `Jugador ${i + 1}: Pierde. `;
+            }
+            else if (puntJugador === puntCrupier) {
+                jugador.ganar(this.apuestaActual);
+                mensajeFinal += `Jugador ${i + 1}: Empate. `;
+            }
+        });
+        this.finalizarRonda(mensajeFinal);
     }
-    finalizarRonda(mensaje, jugadorGana, multiplicadorGanancia = 1, esEmpate = false) {
+    finalizarRonda(mensaje) {
         this.cambiarEstado('FIN_RONDA');
         this.ui.mostrarMensaje(mensaje);
-        if (esEmpate) {
-            this.jugador.ganar(this.apuestaActual); // Devolver la apuesta
-        }
-        else if (jugadorGana) {
-            this.jugador.ganar(this.apuestaActual + (this.apuestaActual * multiplicadorGanancia));
-        }
-        this.ui.actualizarCartera(this.jugador.cartera);
-        if (this.jugador.cartera === 0) {
-            this.ui.mostrarMensaje('Te has quedado sin dinero. ¡Fin del juego!');
-            // Aquí se podrían deshabilitar todos los botones permanentemente
+        this.ui.actualizarCarteras(this.jugadores.map(j => j.cartera));
+        if (this.jugadores.every(j => j.cartera === 0)) {
+            this.ui.mostrarMensaje('Todos los jugadores se han quedado sin dinero. ¡Fin del juego!');
         }
     }
     sleep(ms) {
@@ -302,7 +370,8 @@ class Juego {
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const saldoInicial = parseInt(urlParams.get('saldo') || '1000', 10);
-    new Juego(new InterfazUsuario(), saldoInicial);
+    const numeroJugadores = parseInt(urlParams.get('jugadores') || '1', 10);
+    new Juego(new InterfazUsuario(), numeroJugadores, saldoInicial);
 });
 export {};
 //# sourceMappingURL=blackjack.js.map

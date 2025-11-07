@@ -3,6 +3,7 @@ class LandingPage {
         this.blackjackOption = document.getElementById('blackjack-option');
         this.pokerOption = document.getElementById('poker-option');
         this.balanceInput = document.getElementById('balance-input');
+        this.playerCountInput = document.getElementById('player-count-input');
         this.startGameButton = document.getElementById('start-game-button');
         this.juegoSeleccionado = 'BlackJack';
         this.configurarOpcionesJuego();
@@ -20,16 +21,16 @@ class LandingPage {
     configurarBotonInicio() {
         this.startGameButton.addEventListener('click', () => {
             const saldoInicial = parseInt(this.balanceInput.value, 10);
+            const numeroJugadores = parseInt(this.playerCountInput.value, 10);
             if (isNaN(saldoInicial) || saldoInicial <= 0) {
                 alert('Por favor, introduce un saldo inicial válido.');
                 return;
             }
             if (this.juegoSeleccionado === 'BlackJack') {
-                window.location.href = `blackjack.html?saldo=${saldoInicial}`;
+                window.location.href = `blackjack.html?saldo=${saldoInicial}&jugadores=${numeroJugadores}`;
             }
             else {
-                alert('El Poker no está implementado todavía.');
-                // Aquí se podría redirigir o cargar el juego de Poker
+                window.location.href = `poker.html?saldo=${saldoInicial}&jugadores=${numeroJugadores}`;
             }
         });
     }
