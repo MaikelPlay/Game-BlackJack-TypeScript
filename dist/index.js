@@ -39,10 +39,11 @@ class Baraja {
     robar() { return this.cartas.pop(); }
 }
 class Jugador {
-    constructor() {
+    constructor(carteraInicial = 1000) {
         this.mano = [];
         this.puntuacion = 0;
         this.cartera = 1000;
+        this.cartera = carteraInicial;
     }
     agregarCarta(carta) {
         this.mano.push(carta);
@@ -158,14 +159,14 @@ class InterfazUsuario {
 }
 // --- CLASE PRINCIPAL DEL JUEGO ---
 class Juego {
-    constructor(ui) {
+    constructor(ui, carteraInicial) {
         this.ui = ui;
         this.estado = 'APOSTANDO';
         this.baraja = new Baraja();
-        this.jugador = new Jugador();
         this.crupier = new Jugador();
         this.apuestaActual = 10;
         this.INCREMENTO_APUESTA = 10;
+        this.jugador = new Jugador(carteraInicial);
         this.ui.configurarBotones({
             nuevaRonda: () => this.nuevaRonda(),
             pedirCarta: () => this.pedirCarta(),
@@ -297,9 +298,50 @@ class Juego {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
+// --- CLASE PARA LA PÁGINA DE INICIO ---
+class LandingPage {
+    constructor() {
+        this.landingContainer = document.getElementById('landing-container');
+        this.gameContainer = document.getElementById('game-container');
+        this.blackjackOption = document.getElementById('blackjack-option');
+        this.pokerOption = document.getElementById('poker-option');
+        this.balanceInput = document.getElementById('balance-input');
+        this.startGameButton = document.getElementById('start-game-button');
+        this.juegoSeleccionado = 'BlackJack';
+        this.configurarOpcionesJuego();
+        this.configurarBotonInicio();
+    }
+    configurarOpcionesJuego() {
+        this.blackjackOption.addEventListener('click', () => this.seleccionarJuego('BlackJack'));
+        this.pokerOption.addEventListener('click', () => this.seleccionarJuego('Poker'));
+    }
+    seleccionarJuego(juego) {
+        this.juegoSeleccionado = juego;
+        this.blackjackOption.classList.toggle('selected', juego === 'BlackJack');
+        this.pokerOption.classList.toggle('selected', juego === 'Poker');
+    }
+    configurarBotonInicio() {
+        this.startGameButton.addEventListener('click', () => {
+            const saldoInicial = parseInt(this.balanceInput.value, 10);
+            if (isNaN(saldoInicial) || saldoInicial <= 0) {
+                alert('Por favor, introduce un saldo inicial válido.');
+                return;
+            }
+            this.landingContainer.classList.add('hidden');
+            this.gameContainer.classList.remove('hidden');
+            if (this.juegoSeleccionado === 'BlackJack') {
+                new Juego(new InterfazUsuario(), saldoInicial);
+            }
+            else {
+                alert('El Poker no está implementado todavía.');
+                // Aquí se podría redirigir o cargar el juego de Poker
+            }
+        });
+    }
+}
 // --- PUNTO DE ENTRADA DE LA APP ---
 document.addEventListener('DOMContentLoaded', () => {
-    new Juego(new InterfazUsuario());
+    new LandingPage();
 });
 export {};
 //# sourceMappingURL=index.js.map

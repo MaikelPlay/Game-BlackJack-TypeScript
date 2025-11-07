@@ -3,43 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack</title>
+    <title>Casino 480</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="../dist/index.js" defer></script>
+    <script type="module" src="../dist/landing.js" defer></script>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Blackjack</h1>
-
-        <div id="messages" class="messages"></div>
-
-        <div class="player-area">
-            <h2>Crupier: <span id="dealer-score">0</span></h2>
-            <div id="dealer-cards" class="card-area"></div>
+    <div id="landing-container" class="landing-container">
+        <h1>Casino 480</h1>
+        <div class="game-selection">
+            <button id="blackjack-option" class="game-option selected">BlackJack</button>
+            <button id="poker-option" class="game-option">Poker</button>
         </div>
-
-        <div class="player-area">
-            <h2>Jugador: <span id="player-score">0</span></h2>
-            <div id="player-cards" class="card-area"></div>
+        <div class="balance-selection">
+            <label for="balance-input">Saldo Inicial:</label>
+            <input type="number" id="balance-input" value="1000" min="100" step="100">
         </div>
-
-        <div class="betting-area">
-            <div class="balance">
-                Cartera: $<span id="player-balance">1000</span>
-            </div>
-            <div class="bet-controls">
-                <button id="decrease-bet-button">-</button>
-                <span class="current-bet">Apuesta: $<span id="current-bet">10</span></span>
-                <button id="increase-bet-button">+</button>
-                <button id="bet-button">Apostar</button>
-            </div>
-        </div>
-
-        <div class="actions">
-            <button id="new-round-button" class="animated-button">Apostar de Nuevo</button>
-            <button id="hit-button" disabled>Pedir Carta</button>
-            <button id="stand-button" disabled>Plantarse</button>
-        </div>
+        <button id="start-game-button">Empezar a Jugar</button>
     </div>
 </body>
 </html>

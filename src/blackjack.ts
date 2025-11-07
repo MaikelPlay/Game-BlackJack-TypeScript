@@ -1,8 +1,8 @@
+
 // Tipos
 type Palo = 'Corazones' | 'Diamantes' | 'Picas' | 'Tréboles';
 type Rango = '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K' | 'A';
 type EstadoJuego = 'APOSTANDO' | 'JUGANDO' | 'FIN_RONDA';
-type JuegoSeleccionado = 'BlackJack' | 'Poker';
 
 // --- CLASES DE LA LÓGICA DEL JUEGO ---
 
@@ -344,59 +344,10 @@ class Juego {
     }
 }
 
-// --- CLASE PARA LA PÁGINA DE INICIO ---
-
-class LandingPage {
-    private landingContainer = document.getElementById('landing-container')!;
-    private gameContainer = document.getElementById('game-container')!;
-    private blackjackOption = document.getElementById('blackjack-option') as HTMLButtonElement;
-    private pokerOption = document.getElementById('poker-option') as HTMLButtonElement;
-    private balanceInput = document.getElementById('balance-input') as HTMLInputElement;
-    private startGameButton = document.getElementById('start-game-button') as HTMLButtonElement;
-
-    private juegoSeleccionado: JuegoSeleccionado = 'BlackJack';
-
-    constructor() {
-        this.configurarOpcionesJuego();
-        this.configurarBotonInicio();
-    }
-
-    private configurarOpcionesJuego(): void {
-        this.blackjackOption.addEventListener('click', () => this.seleccionarJuego('BlackJack'));
-        this.pokerOption.addEventListener('click', () => this.seleccionarJuego('Poker'));
-    }
-
-    private seleccionarJuego(juego: JuegoSeleccionado): void {
-        this.juegoSeleccionado = juego;
-        this.blackjackOption.classList.toggle('selected', juego === 'BlackJack');
-        this.pokerOption.classList.toggle('selected', juego === 'Poker');
-    }
-
-    private configurarBotonInicio(): void {
-        this.startGameButton.addEventListener('click', () => {
-            const saldoInicial = parseInt(this.balanceInput.value, 10);
-
-            if (isNaN(saldoInicial) || saldoInicial <= 0) {
-                alert('Por favor, introduce un saldo inicial válido.');
-                return;
-            }
-
-            this.landingContainer.classList.add('hidden');
-            this.gameContainer.classList.remove('hidden');
-
-            if (this.juegoSeleccionado === 'BlackJack') {
-                new Juego(new InterfazUsuario(), saldoInicial);
-            } else {
-                alert('El Poker no está implementado todavía.');
-                // Aquí se podría redirigir o cargar el juego de Poker
-            }
-        });
-    }
-}
-
-
 // --- PUNTO DE ENTRADA DE LA APP ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    new LandingPage();
+    const urlParams = new URLSearchParams(window.location.search);
+    const saldoInicial = parseInt(urlParams.get('saldo') || '1000', 10);
+    new Juego(new InterfazUsuario(), saldoInicial);
 });

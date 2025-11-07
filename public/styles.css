@@ -1,3 +1,9 @@
+@import url("landing.css");
+
+.hidden {
+    display: none;
+}
+
 html, body {
     margin: 0;
     padding: 0;
