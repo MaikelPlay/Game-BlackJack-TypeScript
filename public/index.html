@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino 480</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="../dist/landing.js" defer></script>
+</head>
+<body>
+    <div class="lang-selector" id="lang-selector">
+        <label for="language-select" class="visually-hidden">Idioma</label>
+        <select id="language-select" aria-label="Seleccionar idioma">
+            <option value="es" selected>Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="it">Italiano</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="nl">Nederlands</option>
+        </select>
+    </div>
+    <div id="landing-container" class="landing-container">
+        <h1>Casino 480</h1>
+        <div class="game-selection">
+            <button id="blackjack-option" class="game-option selected">BlackJack</button>
+            <button id="poker-option" class="game-option">Poker</button>
+        </div>
+        <div class="balance-selection">
+            <label for="balance-input">Saldo Inicial:</label>
+            <input type="number" id="balance-input" value="1000" min="100" step="100">
+        </div>
+        <div class="name-selection">
+            <label for="player-name-input">Tu Nombre:</label>
+            <input type="text" id="player-name-input" placeholder="Tu nombre" value="Jugador">
+        </div>
+        <div class="player-selection">
+            <label for="player-count-input">Jugadores:</label>
+            <select id="player-count-input">
+                <option value="1">1 Jugador</option>
+                <option value="2">2 Jugadores</option>
+                <option value="3">3 Jugadores</option>
+                <option value="4">4 Jugadores</option>
+            </select>
+        </div>
+        <button id="start-game-button">Empezar a Jugar</button>
+    </div>
+</body>
+</html>

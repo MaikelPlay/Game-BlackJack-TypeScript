@@ -1,0 +1,17 @@
+{
+  "bet.place_prompt": "Plaats je inzet om de ronde te starten.",
+  "bet.cannot_increase": "Je kunt de inzet niet verhogen; sommige spelers hebben niet genoeg geld.",
+  "bet.human_insufficient": "Je hebt niet genoeg geld voor de huidige inzet.",
+  "turn.player_prompt": "Speler {index} is aan de beurt. Pak kaart of passen?",
+  "player.busted": "Speler {index} is gebust met {score}!",
+  "player.stand": "Speler {index} past.",
+  "player.blackjack": "Speler {index} heeft Blackjack!",
+  "dealer.blackjack": "De dealer heeft Blackjack!",
+  "turn.dealer": "Beurt van de dealer...",
+  "round.finished_all_out": "Alle spelers hebben geen geld meer. Spel voorbij!",
+  "result.win": "{name}: Wint.",
+  "result.lose": "{name}: Verliest.",
+  "result.push": "{name}: Gelijke stand.",
+  "poker.showdown": "Showdown! Bepalen wie wint...",
+  "poker.winner": "{name} wint de ronde met de pot van ${amount}!"
+}

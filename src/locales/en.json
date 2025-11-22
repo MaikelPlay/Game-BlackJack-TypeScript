@@ -1,0 +1,17 @@
+{
+  "bet.place_prompt": "Place your bet to start the round.",
+  "bet.cannot_increase": "You can't increase the bet; some players don't have enough money.",
+  "bet.human_insufficient": "You don't have enough money for the current bet.",
+  "turn.player_prompt": "Player {index} turn. Hit or Stand?",
+  "player.busted": "Player {index} busted with {score}!",
+  "player.stand": "Player {index} stands.",
+  "player.blackjack": "Player {index} has Blackjack!",
+  "dealer.blackjack": "Dealer has Blackjack!",
+  "turn.dealer": "Dealer's turn...",
+  "round.finished_all_out": "All players are out of money. Game over!",
+  "result.win": "{name}: Wins.",
+  "result.lose": "{name}: Loses.",
+  "result.push": "{name}: Push.",
+  "poker.showdown": "Showdown! Determining winner...",
+  "poker.winner": "{name} wins the round with the pot of ${amount}!"
+}

@@ -1,0 +1,32 @@
+# Node dependencies
+node_modules/
+
+# Build output
+/dist/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Generated assets (if you want to ignore generated images)
+public/assets/Gemini_Generated_Image_*.png
+
+# Ignore lockfile cache from tooling
+node_modules/.package-lock.json

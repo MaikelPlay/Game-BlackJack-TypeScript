@@ -1,0 +1,17 @@
+{
+  "bet.place_prompt": "Faites votre mise pour commencer la manche.",
+  "bet.cannot_increase": "Vous ne pouvez pas augmenter la mise ; certains joueurs n'ont pas assez d'argent.",
+  "bet.human_insufficient": "Vous n'avez pas assez d'argent pour la mise actuelle.",
+  "turn.player_prompt": "Tour du Joueur {index}. Tirer ou Rester?",
+  "player.busted": "Le Joueur {index} a dépassé avec {score}!",
+  "player.stand": "Le Joueur {index} reste.",
+  "player.blackjack": "Le Joueur {index} a Blackjack!",
+  "dealer.blackjack": "Le croupier a Blackjack!",
+  "turn.dealer": "Tour du croupier...",
+  "round.finished_all_out": "Tous les joueurs sont à court d'argent. Fin du jeu!",
+  "result.win": "{name} : Gagne.",
+  "result.lose": "{name} : Perd.",
+  "result.push": "{name} : Égalité.",
+  "poker.showdown": "Moment de vérité ! Détermination du gagnant...",
+  "poker.winner": "{name} gagne la manche avec le pot de ${amount}!"
+}

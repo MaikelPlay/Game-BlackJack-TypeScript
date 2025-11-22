@@ -1,0 +1,17 @@
+{
+  "bet.place_prompt": "Realiza tua aposta para começar a rodada.",
+  "bet.cannot_increase": "Não é possível aumentar a aposta; alguns jogadores não têm dinheiro suficiente.",
+  "bet.human_insufficient": "Você não tem dinheiro suficiente para a aposta atual.",
+  "turn.player_prompt": "Vez do Jogador {index}. Pedir carta ou Parar?",
+  "player.busted": "Jogador {index} foi estourado com {score}!",
+  "player.stand": "Jogador {index} para.",
+  "player.blackjack": "Jogador {index} tem Blackjack!",
+  "dealer.blackjack": "O Crupiê tem Blackjack!",
+  "turn.dealer": "Vez do Crupiê...",
+  "round.finished_all_out": "Todos os jogadores ficaram sem dinheiro. Fim do jogo!",
+  "result.win": "{name}: Ganha.",
+  "result.lose": "{name}: Perde.",
+  "result.push": "{name}: Empate.",
+  "poker.showdown": "Hora da verdade! Determinando vencedor...",
+  "poker.winner": "{name} ganha a rodada com o pote de ${amount}!"
+}

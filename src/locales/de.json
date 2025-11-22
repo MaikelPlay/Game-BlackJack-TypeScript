@@ -1,0 +1,17 @@
+{
+  "bet.place_prompt": "Setze deinen Einsatz, um die Runde zu starten.",
+  "bet.cannot_increase": "Du kannst den Einsatz nicht erhöhen; einige Spieler haben nicht genug Geld.",
+  "bet.human_insufficient": "Du hast nicht genug Geld für den aktuellen Einsatz.",
+  "turn.player_prompt": "Spieler {index} ist dran. Ziehen oder Passen?",
+  "player.busted": "Spieler {index} ist mit {score} pleite!",
+  "player.stand": "Spieler {index} passt.",
+  "player.blackjack": "Spieler {index} hat Blackjack!",
+  "dealer.blackjack": "Der Dealer hat Blackjack!",
+  "turn.dealer": "Zug des Dealers...",
+  "round.finished_all_out": "Alle Spieler haben kein Geld mehr. Spiel beendet!",
+  "result.win": "{name}: Gewinnt.",
+  "result.lose": "{name}: Verliert.",
+  "result.push": "{name}: Unentschieden.",
+  "poker.showdown": "Showdown! Bestimme den Gewinner...",
+  "poker.winner": "{name} gewinnt die Runde mit dem Pot von ${amount}!"
+}

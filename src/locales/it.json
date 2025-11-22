@@ -1,0 +1,17 @@
+{
+  "bet.place_prompt": "Effettua la tua puntata per iniziare il round.",
+  "bet.cannot_increase": "Non puoi aumentare la puntata; alcuni giocatori non hanno abbastanza soldi.",
+  "bet.human_insufficient": "Non hai abbastanza soldi per la puntata corrente.",
+  "turn.player_prompt": "Turno del Giocatore {index}. Chiedi carta o Stai?",
+  "player.busted": "Giocatore {index} sballato con {score}!",
+  "player.stand": "Giocatore {index} si ferma.",
+  "player.blackjack": "Giocatore {index} ha Blackjack!",
+  "dealer.blackjack": "Il banco ha Blackjack!",
+  "turn.dealer": "Turno del banco...",
+  "round.finished_all_out": "Tutti i giocatori sono rimasti senza soldi. Fine del gioco!",
+  "result.win": "{name}: Vince.",
+  "result.lose": "{name}: Perde.",
+  "result.push": "{name}: Pareggio.",
+  "poker.showdown": "È il momento della verità! Determinazione del vincitore...",
+  "poker.winner": "{name} vince il round con il piatto di ${amount}!"
+}
