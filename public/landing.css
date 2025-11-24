@@ -24,12 +24,6 @@
     animation: fadeInDown 1.5s ease-out;
 }
 
-#ai-name {
-    animation: fadeInDown 1.5s ease-out 0.2s backwards;
-    margin-top: -1.5rem; /* Adjust margin to bring it closer to the title */
-    margin-bottom: 2rem; /* Ensure proper spacing with next element */
-}
-
 /* Language selector (discreet, top-left) */
 .lang-selector {
     position: absolute;
@@ -95,7 +89,7 @@
     animation: fadeInUp 1.5s ease-out 1.1s backwards;
 }
 
-.balance-selection label {
+.balance-selection label, .name-selection label {
     font-size: 1.5rem;
     margin-right: 1rem;
     color: #eee;
@@ -103,7 +97,7 @@
 }
 
 /* Fondo opaco para mejorar legibilidad de la etiqueta 'Saldo Inicial' */
-.balance-selection label {
+.balance-selection label, .name-selection label {
     background: rgba(0,0,0,0.85);
     padding: 6px 10px;
     border-radius: 6px;
