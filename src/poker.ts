@@ -25,6 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const pokerUI = new PokerUI();
-    const game = new PokerGame(pokerUI, numeroJugadores, saldoInicial, lang, nombreJugador);
+    const game = new PokerGame(pokerUI, saldoInicial, lang, nombreJugador);
     game.startHand();
 });
