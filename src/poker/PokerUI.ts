@@ -1,5 +1,5 @@
 import { Carta } from '../../src/common/Card.js';
-import { PokerPlayer } from './types.js';
+import { PokerPlayer } from './PokerPlayer.js'; // Corrected import path for PokerPlayer
 
 export class PokerUI {
     private playersContainer: HTMLElement | null = document.getElementById('players-container');
@@ -48,16 +48,16 @@ export class PokerUI {
         }
     }
 
-    showTable(community: Carta[], players: PokerPlayer[], pot: number) {
+    showTable(community: Carta[], players: PokerPlayer[], totalPot: number) {
         if (this.communityCardsContainer) {
-            const communityHTML = community.map(c => `<div class="card"><img src="assets/Baraja/${c.palo}_${c.rango}.png" alt="${c.toString()}"></div>`).join('');
+            const communityHTML = community.map(c => `<div class="card"><img src="${c.getImagen()}" alt="${c.toString()}"></div>`).join('');
             this.communityCardsContainer.innerHTML = communityHTML;
         }
-        if (this.potDiv) this.potDiv.textContent = `${this.translations.potLabel}: $${pot}`;
+        if (this.potDiv) this.potDiv.textContent = `${this.translations.potLabel}: $${totalPot}`;
         
         // Update player areas (cards and balance)
-        players.forEach((player, i) => {
-            const playerArea = document.getElementById(`player-area-${i}`);
+        players.forEach((player) => {
+            const playerArea = document.getElementById(`player-area-${player.id}`);
             if (playerArea) {
                 const balanceDiv = playerArea.querySelector('.player-balance');
                 if (balanceDiv) balanceDiv.textContent = `${this.translations.playerBalanceLabel}${player.stack}`;
@@ -65,21 +65,48 @@ export class PokerUI {
                 const betDiv = playerArea.querySelector('.player-bet');
                 if (betDiv) betDiv.textContent = `Bet: $${player.currentBet}`;
 
-                const cardsDiv = document.getElementById(`player-cards-${i}`);
+                const cardsDiv = document.getElementById(`player-cards-${player.id}`);
                 if (cardsDiv) {
-                    const handHTML = player.hand.map(c => `<div class="card"><img src="assets/Baraja/${c.palo}_${c.rango}.png" alt="${c.toString()}"></div>`).join('');
+                    // Display hole cards
+                    let handHTML = '';
+                    if (player.isHuman) {
+                        handHTML = player.holeCards.map(c => `<div class="card"><img src="${c.getImagen()}" alt="${c.toString()}"></div>`).join('');
+                    } else {
+                        // For AI players, show face-down cards unless it's showdown
+                        // For now, assume face-down unless explicitly revealed
+                        handHTML = player.holeCards.map(() => `<div class="card back"><img src="assets/Baraja/atras.png" alt="Card back"></div>`).join('');
+                    }
                     cardsDiv.innerHTML = handHTML;
+                }
+
+                // Update player status
+                const statusDiv = playerArea.querySelector('.player-status');
+                if (statusDiv) {
+                    if (!player.inHand) {
+                        statusDiv.textContent = '(Fold)';
+                        statusDiv.classList.add('folded');
+                    } else if (player.isAllIn) {
+                        statusDiv.textContent = '(All-In)';
+                        statusDiv.classList.add('all-in');
+                    } else {
+                        statusDiv.textContent = '';
+                        statusDiv.classList.remove('folded', 'all-in');
+                    }
                 }
             }
         });
     }
 
-    async promptPlayerAction(player: PokerPlayer, minCall: number, canRaise: boolean): Promise<{ type: string; amount?: number }> {
+    async promptPlayerAction(player: PokerPlayer, minCall: number, canRaise: boolean, lastBet: number, minRaise: number): Promise<{ type: string; amount?: number }> {
+        console.log(`[UI] Prompting action for ${player.name}`);
         this.log(`${player.name}, ${this.translations.actionPrompt}`);
-        this.enableActionButtons(minCall, player.stack, canRaise);
+        this.enableActionButtons(minCall, player.stack, canRaise, lastBet, minRaise);
 
         return new Promise(resolve => {
             this.playerActionResolver = resolve;
+
+            // Remove existing listeners to prevent multiple bindings
+            this.removeActionListeners();
 
             this.foldButton?.addEventListener('click', this.handleFold);
             this.checkButton?.addEventListener('click', this.handleCheck);
@@ -89,23 +116,28 @@ export class PokerUI {
     }
 
     private handleFold = () => {
+        console.log('[UI] Fold button clicked');
         this.resolvePlayerAction({ type: 'fold' });
     }
 
     private handleCheck = () => {
+        console.log('[UI] Check button clicked');
         this.resolvePlayerAction({ type: 'check' });
     }
 
     private handleCall = () => {
+        console.log('[UI] Call button clicked');
+        // The call amount is derived from minCall, so we don't need to pass it here
         this.resolvePlayerAction({ type: 'call' });
     }
 
     private handleRaise = () => {
+        console.log('[UI] Raise button clicked');
         const amount = this.raiseAmountInput ? parseInt(this.raiseAmountInput.value, 10) : undefined;
         if (amount && amount > 0) { // Basic validation
             this.resolvePlayerAction({ type: 'raise', amount });
         } else {
-            this.log('Invalid raise amount.');
+            this.log('Invalid raise amount. Please enter a positive number.');
         }
     }
 
@@ -118,25 +150,41 @@ export class PokerUI {
         }
     }
 
-    private enableActionButtons(minCall: number, playerStack: number, canRaise: boolean): void {
+    private enableActionButtons(minCall: number, playerStack: number, canRaise: boolean, lastBet: number, minRaise: number): void {
+        // Always allow fold
         if (this.foldButton) this.foldButton.disabled = false;
         
-        // If minCall is 0, player can check, otherwise can only call or raise (or fold)
+        // Check/Call logic
         if (minCall === 0) {
             if (this.checkButton) this.checkButton.disabled = false;
-            if (this.callButton) this.callButton.disabled = true; // Cannot call if minCall is 0
+            if (this.callButton) this.callButton.disabled = true;
         } else {
-            if (this.checkButton) this.checkButton.disabled = true; // Cannot check if minCall > 0
-            if (this.callButton) this.callButton.disabled = false;
+            if (this.checkButton) this.checkButton.disabled = true;
+            // Can only call if player has enough stack to match minCall or go all-in attempting to call
+            if (this.callButton) this.callButton.disabled = (playerStack === 0);
         }
 
+        // Raise logic
+        // Can only raise if explicitly allowed and player has enough stack
         if (this.raiseButton) this.raiseButton.disabled = !canRaise || playerStack <= minCall;
-        if (this.raiseAmountInput) this.raiseAmountInput.disabled = !canRaise || playerStack <= minCall;
-        
-        // Adjust raise amount input min value
         if (this.raiseAmountInput) {
-            this.raiseAmountInput.min = (minCall * 2).toString(); // Minimum raise is typically twice the current bet or call amount
-            this.raiseAmountInput.value = (minCall * 2).toString(); // Set default raise amount
+            this.raiseAmountInput.disabled = !canRaise || playerStack <= minCall;
+            // The minimum total bet for a raise is (lastBet + minRaise)
+            const theoreticalMinTotalRaise = lastBet + minRaise;
+            this.raiseAmountInput.min = (theoreticalMinTotalRaise).toString();
+            this.raiseAmountInput.value = (theoreticalMinTotalRaise).toString();
+            this.raiseAmountInput.max = playerStack.toString();
+        }
+
+        // Handle all-in explicitly if playerStack <= minCall and they haven't folded.
+        // The buttons will reflect whether they can call/raise or can only go all-in implicitly
+        // by calling/raising their remaining stack.
+        if (playerStack <= minCall) {
+            if (this.callButton) this.callButton.textContent = `All-In ($${playerStack})`;
+            if (this.raiseButton) this.raiseButton.disabled = true;
+            if (this.raiseAmountInput) this.raiseAmountInput.disabled = true;
+        } else {
+            if (this.callButton) this.callButton.textContent = `${this.translations.callButton} ($${minCall})`;
         }
     }
 
@@ -146,6 +194,7 @@ export class PokerUI {
         if (this.callButton) this.callButton.disabled = true;
         if (this.raiseButton) this.raiseButton.disabled = true;
         if (this.raiseAmountInput) this.raiseAmountInput.disabled = true;
+        if (this.callButton) this.callButton.textContent = this.translations.callButton; // Reset text
     }
 
     private removeActionListeners(): void {
@@ -190,52 +239,36 @@ export class PokerUI {
     crearAreasDeJugador(players: PokerPlayer[]): void {
         if (!this.playersContainer) return;
         this.playersContainer.innerHTML = '';
-        const numJugadores = players.length;
-        const radio = 200;
-        const centroX = this.playersContainer.offsetWidth / 2;
-        const centroY = this.playersContainer.offsetHeight / 2;
+        
+        // Fixed positions for Human (bottom center) and AI (top center)
+        const humanPosition = { top: '85%', left: '50%' };
+        const aiPosition = { top: '15%', left: '50%' }; // Adjusted for top center
 
-        players.forEach((player, i) => {
-            const angulo = (i / numJugadores) * 2 * Math.PI;
-            const x = centroX + radio * Math.cos(angulo) - 60;
-            const y = centroY + radio * Math.sin(angulo) - 50;
-
+        players.forEach((player) => {
             const playerArea = document.createElement('div');
             playerArea.classList.add('player-area-poker');
-            if (player.isHuman) {
-                playerArea.classList.add('human-player');
-            }
-            playerArea.id = `player-area-${i}`;
+            playerArea.id = `player-area-${player.id}`;
             playerArea.style.position = 'absolute';
-            playerArea.style.left = `${x}px`;
-            playerArea.style.top = `${y}px`;
+            
+            // Assign fixed positions
+            const pos = player.isHuman ? humanPosition : aiPosition;
+            playerArea.style.left = pos.left;
+            playerArea.style.top = pos.top;
+            playerArea.style.transform = 'translate(-50%, -50%)';
 
             playerArea.innerHTML = `
                                 <div class="player-name">${player.name}</div>
+                                <div class="player-status"></div>
                                 <div class="player-balance">${this.translations.playerBalanceLabel}${player.stack}</div>
-                                <div class="player-bet"></div>
-                                <div id="player-cards-${i}" class="player-cards"></div>
+                                <div class="player-bet">Bet: $${player.currentBet}</div>
+                                <div id="player-cards-${player.id}" class="player-cards"></div>
                         `;
-            this.playersContainer!.appendChild(playerArea);
+            this.playersContainer.appendChild(playerArea);
         });
     }
 
-    repartirCarta(card: Carta, playerIndex: number, isCommunity: boolean, cardCountInHand: number): void {
-        // This method might need to be refined. `showTable` now updates player cards.
-        // For individual card dealing animation, this might be used.
-        // For now, `showTable` is responsible for rendering all cards at once.
-        const contenedor = isCommunity ? this.communityCardsContainer : document.getElementById(`player-cards-${playerIndex}`);
-        if (!contenedor) return;
-        // Check if the card is already rendered to avoid duplicates if called after showTable
-        const cardString = `${card.rango}${card.palo[0]}`;
-        if (!contenedor.querySelector(`span.card[data-card="${cardString}"]`)) {
-            const span = document.createElement('span');
-            span.classList.add('card');
-            span.textContent = cardString;
-            span.dataset.card = cardString; // Add data attribute to easily check for existence
-            contenedor.appendChild(span);
-        }
-    }
+    // Removed repartirCarta as showTable now handles card rendering more comprehensively.
+    // We can add specific card animation logic later if needed.
 
     actualizarBote(pot: number): void {
         if (this.potDiv) this.potDiv.textContent = `${this.translations.potLabel}: $${pot}`;
@@ -249,32 +282,32 @@ export class PokerUI {
         this.log(this.translations.showdownMessage);
     }
 
-    limpiarTablero(numPlayers: number): void {
+    limpiarTablero(): void { // Removed numPlayers parameter as it's not strictly needed for clearing all player areas
         if (this.communityCardsContainer) this.communityCardsContainer.innerHTML = '';
-        for (let i = 0; i < numPlayers; i++) {
-            const playerCardsDiv = document.getElementById(`player-cards-${i}`);
-            if (playerCardsDiv) playerCardsDiv.innerHTML = '';
-        }
+        
+        // Clear player cards and status for all player areas
+        const allPlayerCardsDivs = document.querySelectorAll<HTMLElement>('.player-cards');
+        allPlayerCardsDivs.forEach(cardsDiv => {
+            cardsDiv.innerHTML = '';
+        });
+
+        const allPlayerStatusDivs = document.querySelectorAll<HTMLElement>('.player-status');
+        allPlayerStatusDivs.forEach(statusDiv => {
+            statusDiv.textContent = '';
+            statusDiv.classList.remove('folded', 'all-in');
+        });
+
         this.clearMessages(); // Clear all messages
     }
 
-    // New method to update a specific player's UI (stack, current bet, etc.)
-    updatePlayerUI(player: PokerPlayer, playerIndex: number): void {
-        const playerArea = document.getElementById(`player-area-${playerIndex}`);
-        if (playerArea) {
-            const balanceDiv = playerArea.querySelector('.player-balance');
-            if (balanceDiv) balanceDiv.textContent = `${this.translations.playerBalanceLabel}${player.stack}`;
-            // Could add more updates here, e.g., current bet, status etc.
-        }
-    }
-
-    // New method to show/hide player cards (e.g., face down for opponents)
-    // This will require modifying how cards are added in showTable or crearAreasDeJugador
-    // For now, showTable always displays them. We can enhance this later if needed.
-    revealPlayerCards(playerIndex: number, cards: Carta[]): void {
-        const cardsDiv = document.getElementById(`player-cards-${playerIndex}`);
-        if (cardsDiv) {
-            cardsDiv.innerHTML = cards.map(c => `<span class="card">${c.rango}${c.palo[0]}</span>`).join('');
-        }
+    // Method to reveal all hole cards at showdown
+    revealAllHoleCards(players: PokerPlayer[]): void {
+        players.forEach(player => {
+            const cardsDiv = document.getElementById(`player-cards-${player.id}`);
+            if (cardsDiv) {
+                const handHTML = player.holeCards.map(c => `<div class="card"><img src="${c.getImagen()}" alt="${c.toString()}"></div>`).join('');
+                cardsDiv.innerHTML = handHTML;
+            }
+        });
     }
 }
