@@ -318,18 +318,40 @@ export class BlackjackGame {
             const apuestaJugador = jugador.apuestaActual || this.apuestaActual;
 
             if (puntJugador > 21) {
+                // Perdió
                 mensajeFinal += t(this.lang, 'result.lose', { name: jugador.id }) + ' ';
+                if (typeof (this.ui as any).mostrarResultadoJugador === 'function') {
+                    (this.ui as any).mostrarResultadoJugador(i, 'lose', apuestaJugador);
+                }
             } else if (esBlackjackJugador && !esBlackjackCrupier) {
-                jugador.ganar(apuestaJugador * 2.5); // Blackjack paga 3:2
+                // Ganó con Blackjack (3:2)
+                const ganancia = apuestaJugador * 1.5;
+                jugador.ganar(apuestaJugador * 2.5);
                 mensajeFinal += t(this.lang, 'result.win', { name: jugador.id }) + ' ';
+                if (typeof (this.ui as any).mostrarResultadoJugador === 'function') {
+                    (this.ui as any).mostrarResultadoJugador(i, 'win', ganancia);
+                }
             } else if (puntCrupier > 21 || puntJugador > puntCrupier) {
-                jugador.ganar(apuestaJugador * 2); // El jugador gana
+                // Ganó normal (1:1)
+                const ganancia = apuestaJugador;
+                jugador.ganar(apuestaJugador * 2);
                 mensajeFinal += t(this.lang, 'result.win', { name: jugador.id }) + ' ';
+                if (typeof (this.ui as any).mostrarResultadoJugador === 'function') {
+                    (this.ui as any).mostrarResultadoJugador(i, 'win', ganancia);
+                }
             } else if (puntCrupier > puntJugador) {
+                // Perdió
                 mensajeFinal += t(this.lang, 'result.lose', { name: jugador.id }) + ' ';
+                if (typeof (this.ui as any).mostrarResultadoJugador === 'function') {
+                    (this.ui as any).mostrarResultadoJugador(i, 'lose', apuestaJugador);
+                }
             } else if (puntJugador === puntCrupier) {
-                jugador.ganar(apuestaJugador); // Empate
+                // Empate
+                jugador.ganar(apuestaJugador);
                 mensajeFinal += t(this.lang, 'result.push', { name: jugador.id }) + ' ';
+                if (typeof (this.ui as any).mostrarResultadoJugador === 'function') {
+                    (this.ui as any).mostrarResultadoJugador(i, 'push', 0);
+                }
             } else {
                 mensajeFinal += `${jugador.id}: Resultado indefinido. `;
             }

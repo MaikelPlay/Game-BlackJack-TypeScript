@@ -1,5 +1,6 @@
 import { PokerGame } from './poker/PokerGame.js';
 import { PokerUI } from './poker/PokerUI.js';
+import { initBackButton } from './backButton.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Inicialización del juego desde los parámetros de la URL
@@ -8,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const numeroJugadores = parseInt(urlParams.get('jugadores') || '2', 10);
     const nombreJugador = urlParams.get('nombre') || 'Jugador';
     const lang = urlParams.get('lang') || window.localStorage.getItem('lang') || 'es';
+
+    // Initialize back button translation
+    initBackButton();
 
     // Lógica del Panel de Reglas
     const rulesToggleButton = document.getElementById('rules-toggle');

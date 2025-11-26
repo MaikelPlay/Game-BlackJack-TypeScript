@@ -1,5 +1,6 @@
 import { BlackjackGame } from './blackjack/BlackjackGame.js';
 import { BlackjackUI } from './blackjack/BlackjackUI.js';
+import { initBackButton } from './backButton.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -8,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombreJugador = urlParams.get('nombre') || '';
     const urlLang = urlParams.get('lang');
     const lang = urlLang || window.localStorage.getItem('lang') || ((navigator.languages && navigator.languages[0]) || navigator.language || 'es').toString().slice(0,2).toLowerCase();
+
+    // Initialize back button translation
+    initBackButton();
 
     // Instanciar las clases de UI y Juego
     const blackjackUI = new BlackjackUI();
