@@ -42,16 +42,16 @@ body {
 
 .player-area-poker {
     position: absolute;
-    width: clamp(140px, 15vw, 180px);
-    min-height: clamp(100px, 12vh, 130px);
+    width: clamp(150px, 16vw, 200px);
+    min-height: clamp(120px, 15vh, 160px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(20,20,20,0.75) 100%);
     border: 3px solid rgba(255,215,0,0.5);
     border-radius: 12px;
-    padding: clamp(8px, 1.5vh, 12px);
+    padding: clamp(10px, 1.8vh, 14px);
     color: white;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
@@ -92,24 +92,30 @@ body {
 .player-area-poker .player-name {
     font-weight: 800;
     font-family: 'Cinzel', serif;
-    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    font-size: clamp(0.9rem, 1.8vw, 1.1rem);
     color: #ffd700;
     text-shadow: 0 0 10px rgba(255,215,0,0.5);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
+    text-align: center;
 }
 
 .player-area-poker .player-balance {
-    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-    color: #e0e0e0;
-    font-weight: 600;
+    font-size: clamp(0.85rem, 1.7vw, 1rem);
+    color: #00ff00;
+    font-weight: 700;
+    margin-bottom: 3px;
+    text-shadow: 0 0 8px rgba(0,255,0,0.4);
+    text-align: center;
 }
 
 .player-area-poker .player-bet {
     color: #ffc107;
     font-weight: 700;
-    font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-    margin-top: 4px;
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+    margin-bottom: 5px;
     text-shadow: 0 0 8px rgba(255,193,7,0.4);
+    text-align: center;
+    min-height: 18px;
 }
 
 .player-area-poker .blind-indicator {
@@ -129,18 +135,20 @@ body {
 
 .player-area-poker .player-cards {
     display: flex;
-    gap: clamp(3px, 0.5vw, 6px);
+    gap: clamp(5px, 1vw, 8px);
     margin-top: clamp(6px, 1vh, 10px);
+    justify-content: center;
 }
 
 .player-cards .card {
-    width: clamp(50px, 7vw, 65px);
-    height: clamp(70px, 10vw, 91px);
+    width: clamp(45px, 6vw, 60px);
+    height: clamp(63px, 8.4vw, 84px);
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .player-cards .card:hover {
-    transform: translateY(-5px) scale(1.05);
+    transform: translateY(-8px) scale(1.15);
     z-index: 10;
 }
 
@@ -173,25 +181,28 @@ body {
 
 .community-cards {
     display: flex;
-    gap: clamp(8px, 1.5vw, 12px);
+    gap: clamp(10px, 2vw, 15px);
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    flex-wrap: nowrap;
+    min-height: 140px;
 }
 
 .community-cards .card {
-    width: clamp(65px, 9vw, 85px);
-    height: clamp(91px, 12.6vw, 119px);
-    animation: cardDeal 0.4s ease-out;
+    width: clamp(70px, 10vw, 90px);
+    height: clamp(98px, 14vw, 126px);
+    animation: cardDeal 0.5s ease-out;
+    flex-shrink: 0;
 }
 
 @keyframes cardDeal {
     0% {
         opacity: 0;
-        transform: translateY(-30px) rotateY(90deg);
+        transform: translateY(-50px) rotateY(180deg) scale(0.5);
     }
     100% {
         opacity: 1;
-        transform: translateY(0) rotateY(0);
+        transform: translateY(0) rotateY(0) scale(1);
     }
 }
 
@@ -393,34 +404,42 @@ body {
 
 /* Rules Panel */
 .rules-toggle-button {
-    position: absolute;
-    top: 20px;
+    position: fixed;
+    top: 80px;
     left: 20px;
     z-index: 1001;
-    padding: 10px 15px;
-    background-color: #007bff;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, rgba(0,123,255,0.9) 0%, rgba(0,86,179,0.9) 100%);
     color: white;
-    border: none;
-    border-radius: 5px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-family: 'Cinzel', serif;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
+.rules-toggle-button:hover {
+    transform: translateX(3px);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.4);
 }
 
 .side-panel {
     position: fixed;
     top: 0;
-    left: -380px;
-    width: 350px;
+    left: -320px;
+    width: 280px;
     height: 100%;
-    background-color: #2c3e50;
+    background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
     color: white;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+    padding: 15px;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.7);
     transition: left 0.3s ease-in-out;
     z-index: 1000;
     overflow-y: auto;
-    border-right: 2px solid #ffd700;
+    border-right: 3px solid #ffd700;
 }
 
 .side-panel.open {
@@ -431,39 +450,46 @@ body {
     margin-top: 0;
     color: #ffd700;
     font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+}
+
+.side-panel h4 {
+    color: #ffd700;
+    font-size: 1rem;
+    margin-top: 15px;
+}
+
+.side-panel p, .side-panel li {
+    font-size: 0.85rem;
+    line-height: 1.4;
 }
 
 .side-panel .close-button {
     position: absolute;
     top: 10px;
     right: 15px;
-    background: none;
+    background: rgba(255,0,0,0.8);
     border: none;
     color: white;
-    font-size: 2rem;
+    font-size: 1.5rem;
     cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
-/* Messages */
+.side-panel .close-button:hover {
+    background: rgba(255,0,0,1);
+    transform: scale(1.1);
+}
+
+/* Messages - OCULTOS */
 .messages {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: clamp(250px, 30%, 350px);
-    max-height: clamp(150px, 25vh, 250px);
-    background: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(20,20,20,0.85) 100%);
-    border-radius: 12px;
-    border: 2px solid rgba(255,215,0,0.3);
-    overflow-y: auto;
-    padding: clamp(8px, 1.5vh, 12px);
-    color: #e0e0e0;
-    font-size: clamp(0.75rem, 1.5vw, 0.85rem);
-    text-align: left;
-    backdrop-filter: blur(8px);
-    box-shadow: 
-        0 8px 25px rgba(0,0,0,0.7),
-        inset 0 1px 0 rgba(255,255,255,0.05);
-    z-index: 50;
+    display: none !important;
 }
 
 .messages p {
@@ -552,13 +578,7 @@ body {
         font-size: 0.9rem;
     }
 
-    .messages {
-        top: 10px;
-        right: 10px;
-        width: 200px;
-        max-height: 120px;
-        font-size: 0.7rem;
-    }
+    /* Messages ocultos - no necesario */
 
     .pot {
         font-size: 1.2rem;
