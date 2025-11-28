@@ -307,7 +307,7 @@ h2 {
         padding: 8px;
     }
     #game-container .players-container {
-        gap: 10px;
+        gap: 40px; /* Cuádruple de separación */
     }
     #game-container .card {
         width: 56px;
@@ -319,7 +319,7 @@ h2 {
 #game-container .bet-controls {
     display: flex;
     align-items: center;
-    gap: calc(8px * 1.05); /* 5% extra spacing */
+    gap: calc(8px * 1.1); /* 10% extra spacing */
 }
 
 /* Force ordering so - and + are adjacent, then the current-bet, then the bet button */
@@ -383,7 +383,7 @@ h2 {
 .players-container {
     display: flex;
     justify-content: center;
-    gap: clamp(10px, 1.5vw, 15px);
+    gap: clamp(44px, 6.6vw, 66px); /* Cuádruple de separación */
     flex-wrap: wrap;
     padding: 5px 0;
     flex-shrink: 1;
@@ -410,11 +410,7 @@ h2 {
 }
 
 .player-type {
-    color: #ffd700 !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: clamp(0.7rem, 1.4vw, 0.85rem) !important;
+    display: none !important; /* Ocultar etiqueta de Humano/IA */
 }
 
 .player-area.human .player-meta {
@@ -646,7 +642,7 @@ h2 {
     }
 
     .players-container {
-        gap: 12px;
+        gap: 48px; /* Cuádruple de separación en móvil */
     }
 
     h1 {
