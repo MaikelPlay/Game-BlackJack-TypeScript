@@ -8,7 +8,7 @@
     width: 100vw; /* Ocupar todo el ancho */
     margin: 0; /* Eliminar márgenes */
     background-image: url('assets/portadaGimini.png');
-    background-size: contain;
+    background-size: cover; /* Estirar para cubrir toda la pantalla */
     background-repeat: no-repeat;
     background-position: center;
     color: white;
