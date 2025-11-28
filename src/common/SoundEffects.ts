@@ -22,107 +22,143 @@ export class SoundEffects {
     }
 
     /**
-     * Sonido de carta cayendo/siendo repartida
+     * Sonido de carta cayendo/siendo repartida - suave y elegante
      */
     public playCardDeal(): void {
         if (!this.enabled || !this.audioContext) return;
 
         const ctx = this.audioContext;
-        const oscillator = ctx.createOscillator();
+        
+        // Crear ruido blanco filtrado suave
+        const bufferSize = ctx.sampleRate * 0.06;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+        }
+        
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 2200;
+        filter.Q.value = 0.8;
+        
         const gainNode = ctx.createGain();
-
-        oscillator.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.06, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+        
+        noise.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(ctx.destination);
-
-        oscillator.frequency.setValueAtTime(200, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-
-        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-
-        oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + 0.1);
+        
+        noise.start(ctx.currentTime);
+        noise.stop(ctx.currentTime + 0.06);
     }
 
     /**
-     * Sonido de carta siendo revelada/volteada
+     * Sonido de carta siendo revelada/volteada - suave y discreto
      */
     public playCardFlip(): void {
         if (!this.enabled || !this.audioContext) return;
 
         const ctx = this.audioContext;
-        const oscillator = ctx.createOscillator();
+        
+        // Un solo sonido suave de volteo
+        const bufferSize = ctx.sampleRate * 0.035;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        for (let j = 0; j < bufferSize; j++) {
+            data[j] = (Math.random() * 2 - 1) * Math.exp(-j / (bufferSize * 0.25));
+        }
+        
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 2800;
+        
         const gainNode = ctx.createGain();
-
-        oscillator.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+        
+        noise.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(ctx.destination);
-
-        oscillator.frequency.setValueAtTime(300, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(500, ctx.currentTime + 0.05);
-        oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
-
-        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-
-        oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + 0.1);
+        
+        noise.start(ctx.currentTime);
+        noise.stop(ctx.currentTime + 0.035);
     }
 
     /**
-     * Sonido de barajar cartas
+     * Sonido de barajar cartas - suave y elegante
      */
     public playShuffle(): void {
         if (!this.enabled || !this.audioContext) return;
 
         const ctx = this.audioContext;
         
-        // Crear múltiples sonidos rápidos para simular barajado
+        // Sonidos suaves de barajado
         for (let i = 0; i < 8; i++) {
             setTimeout(() => {
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
+                const bufferSize = ctx.sampleRate * 0.04;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let j = 0; j < bufferSize; j++) {
+                    data[j] = (Math.random() * 2 - 1) * Math.exp(-j / (bufferSize * 0.3));
+                }
+                
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                
                 const filter = ctx.createBiquadFilter();
-
-                oscillator.connect(filter);
+                filter.type = 'bandpass';
+                filter.frequency.value = 1800 + Math.random() * 600;
+                filter.Q.value = 1.5;
+                
+                const gainNode = ctx.createGain();
+                gainNode.gain.setValueAtTime(0.04 + Math.random() * 0.02, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+                
+                noise.connect(filter);
                 filter.connect(gainNode);
                 gainNode.connect(ctx.destination);
-
-                filter.type = 'highpass';
-                filter.frequency.value = 1000;
-
-                oscillator.type = 'square';
-                oscillator.frequency.setValueAtTime(150 + Math.random() * 100, ctx.currentTime);
-
-                gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.05);
+                
+                noise.start(ctx.currentTime);
+                noise.stop(ctx.currentTime + 0.04);
             }, i * 40);
         }
     }
 
     /**
-     * Sonido de ganar
+     * Sonido de ganar - elegante y discreto
      */
     public playWin(): void {
         if (!this.enabled || !this.audioContext) return;
 
         const ctx = this.audioContext;
+        
+        // Melodía suave y agradable de victoria
         const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
-
         notes.forEach((freq, i) => {
             setTimeout(() => {
                 const oscillator = ctx.createOscillator();
                 const gainNode = ctx.createGain();
-
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
+                
                 oscillator.connect(gainNode);
                 gainNode.connect(ctx.destination);
-
-                oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
-                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-
+                
+                gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                
                 oscillator.start(ctx.currentTime);
                 oscillator.stop(ctx.currentTime + 0.3);
             }, i * 100);
@@ -130,30 +166,33 @@ export class SoundEffects {
     }
 
     /**
-     * Sonido de perder
+     * Sonido de perder - suave y discreto
      */
     public playLose(): void {
         if (!this.enabled || !this.audioContext) return;
 
         const ctx = this.audioContext;
+        
+        // Tono descendente suave
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
-
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.25);
+        
         oscillator.connect(gainNode);
         gainNode.connect(ctx.destination);
-
-        oscillator.frequency.setValueAtTime(300, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.4);
-
-        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-
+        
+        gainNode.gain.setValueAtTime(0.04, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        
         oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + 0.4);
+        oscillator.stop(ctx.currentTime + 0.25);
     }
 
     /**
-     * Sonido de empate
+     * Sonido de empate - neutral y suave
      */
     public playPush(): void {
         if (!this.enabled || !this.audioContext) return;
@@ -162,42 +201,55 @@ export class SoundEffects {
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
 
+        oscillator.type = 'sine';
         oscillator.connect(gainNode);
         gainNode.connect(ctx.destination);
 
-        oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-        gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.04, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
 
         oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + 0.2);
+        oscillator.stop(ctx.currentTime + 0.15);
     }
 
     /**
-     * Sonido de ficha/apuesta
+     * Sonido de fichas de poker - suave y elegante
      */
     public playChip(): void {
         if (!this.enabled || !this.audioContext) return;
 
         const ctx = this.audioContext;
-        const oscillator = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        oscillator.frequency.setValueAtTime(800, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.08);
-
-        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
-
-        oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + 0.08);
+        
+        // Sonido suave de fichas
+        const numChips = 2;
+        
+        for (let i = 0; i < numChips; i++) {
+            setTimeout(() => {
+                // Tono suave de ficha
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                
+                oscillator.type = 'sine';
+                const freq = 1400 + Math.random() * 200;
+                oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(freq * 0.8, ctx.currentTime + 0.04);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                const volume = 0.06 - (i * 0.02);
+                gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+                
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.04);
+            }, i * 35);
+        }
     }
 
     /**
-     * Sonido de botón/click
+     * Sonido de botón/click - muy sutil y discreto
      */
     public playClick(): void {
         if (!this.enabled || !this.audioContext) return;
@@ -206,14 +258,17 @@ export class SoundEffects {
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
 
+        oscillator.type = 'sine';
         oscillator.connect(gainNode);
         gainNode.connect(ctx.destination);
 
         oscillator.frequency.setValueAtTime(1000, ctx.currentTime);
-        gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+        oscillator.frequency.exponentialRampToValueAtTime(700, ctx.currentTime + 0.02);
+        
+        gainNode.gain.setValueAtTime(0.03, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
 
         oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + 0.05);
+        oscillator.stop(ctx.currentTime + 0.02);
     }
 }
