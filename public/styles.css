@@ -178,30 +178,31 @@ h2 {
     transform: scale(0.99);
 }
 
-/* Result notification overlay */
+/* Result notification overlay - centrado sobre el jugador */
 .result-notification {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.98);
     color: white;
-    padding: 20px 30px;
-    border-radius: 12px;
-    font-size: clamp(1.4rem, 3vw, 2rem);
-    font-weight: 900;
+    padding: clamp(6px, 1.2vh, 10px) clamp(12px, 2.5vw, 16px);
+    border-radius: 8px;
+    font-size: clamp(0.9rem, 1.8vw, 1.15rem);
+    font-weight: 800;
     text-align: center;
     z-index: 200;
-    border: 3px solid;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px;
+    border: 2px solid;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), 0 0 20px;
     animation: resultFadeIn 0.4s ease-out;
-    min-width: 180px;
+    min-width: clamp(110px, 18vw, 140px);
+    white-space: nowrap;
 }
 
 @keyframes resultFadeIn {
     0% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.7);
+        transform: translate(-50%, -50%) scale(0.8);
     }
     100% {
         opacity: 1;
@@ -211,8 +212,8 @@ h2 {
 
 .result-notification .result-symbol {
     display: inline-block;
-    font-size: 1.4em;
-    margin-right: 8px;
+    font-size: 1.15em;
+    margin-right: 5px;
 }
 
 /* Win result - green */
@@ -802,4 +803,35 @@ h2 {
 
 .side-panel::-webkit-scrollbar-thumb:hover {
     background: rgba(255,215,0,0.7);
+}
+
+/* Media queries para result-notification responsive - más pequeño */
+@media (max-width: 768px) {
+    .result-notification {
+        bottom: -38px;
+        padding: 6px 10px;
+        font-size: 0.95rem;
+        min-width: 100px;
+        border-width: 2px;
+    }
+    
+    .result-notification .result-symbol {
+        font-size: 1.1em;
+        margin-right: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .result-notification {
+        bottom: -32px;
+        padding: 5px 8px;
+        font-size: 0.85rem;
+        min-width: 90px;
+        border-width: 1.5px;
+    }
+    
+    .result-notification .result-symbol {
+        font-size: 1em;
+        margin-right: 3px;
+    }
 }

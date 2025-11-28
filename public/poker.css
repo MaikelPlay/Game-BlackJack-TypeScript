@@ -252,19 +252,23 @@ body {
     width: clamp(65px, 9vw, 82px);
     height: clamp(91px, 12.6vw, 115px);
     flex-shrink: 0;
-    /* Animación solo en la primera aparición */
-    animation: cardDeal 0.5s ease-out;
+    /* Animación suave de deslizamiento */
+    animation: cardDeal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes cardDeal {
     0% {
         opacity: 0;
-        transform: translateY(-50px) rotateY(180deg) scale(0.5);
+        transform: translateX(-100px) translateY(-30px) rotateY(90deg) scale(0.7);
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateX(-20px) translateY(-10px) rotateY(45deg) scale(0.85);
     }
     100% {
         opacity: 1;
-        transform: translateY(0) rotateY(0) scale(1);
+        transform: translateX(0) translateY(0) rotateY(0) scale(1);
     }
 }
 
@@ -272,7 +276,7 @@ body {
 .community-cards .card.dealt {
     animation: none;
     opacity: 1;
-    transform: translateY(0) rotateY(0) scale(1);
+    transform: translateX(0) translateY(0) rotateY(0) scale(1);
 }
 
 .pot {
