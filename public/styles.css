@@ -178,13 +178,13 @@ h2 {
     transform: scale(0.99);
 }
 
-/* Result notification overlay */
+/* Result notification overlay - centrado sobre el jugador */
 .result-notification {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.98);
     color: white;
     padding: 12px 20px;
     border-radius: 10px;
@@ -201,7 +201,7 @@ h2 {
 @keyframes resultFadeIn {
     0% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.7);
+        transform: translate(-50%, -50%) scale(0.8);
     }
     100% {
         opacity: 1;
@@ -802,4 +802,35 @@ h2 {
 
 .side-panel::-webkit-scrollbar-thumb:hover {
     background: rgba(255,215,0,0.7);
+}
+
+/* Media queries para result-notification responsive - más pequeño */
+@media (max-width: 768px) {
+    .result-notification {
+        bottom: -38px;
+        padding: 6px 10px;
+        font-size: 0.95rem;
+        min-width: 100px;
+        border-width: 2px;
+    }
+    
+    .result-notification .result-symbol {
+        font-size: 1.1em;
+        margin-right: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .result-notification {
+        bottom: -32px;
+        padding: 5px 8px;
+        font-size: 0.85rem;
+        min-width: 90px;
+        border-width: 1.5px;
+    }
+    
+    .result-notification .result-symbol {
+        font-size: 1em;
+        margin-right: 3px;
+    }
 }
