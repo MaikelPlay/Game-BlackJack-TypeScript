@@ -71,19 +71,52 @@
         </div>
 
         <div class="actions poker-actions">
-            <button id="fold-button">Retirarse</button>
-            <button id="check-button">Pasar</button>
-            <button id="call-button">Igualar</button>
-            <button id="allin-button">All In</button>
-            <div class="raise-container">
-                <button id="raise-button">Subir</button>
-                <input type="number" id="raise-amount" value="20" min="20" step="10">
+            <div class="action-buttons-left">
+                <button id="fold-button">Retirarse</button>
+                <button id="check-button">Pasar</button>
+                <button id="call-button">Igualar</button>
+                <button id="allin-button">All In</button>
+            </div>
+            <div class="betting-section">
+                <div class="bet-display">
+                    <span class="bet-label">Apuesta:</span>
+                    <span id="current-bet-amount" class="bet-amount">0€</span>
+                </div>
+                <button id="raise-button" class="raise-submit-btn">Subir</button>
+                <div class="chips-container">
+                    <button class="chip-btn" data-value="10">
+                        <span class="chip-value">10€</span>
+                    </button>
+                    <button class="chip-btn" data-value="20">
+                        <span class="chip-value">20€</span>
+                    </button>
+                    <button class="chip-btn" data-value="50">
+                        <span class="chip-value">50€</span>
+                    </button>
+                    <button class="chip-btn" data-value="100">
+                        <span class="chip-value">100€</span>
+                    </button>
+                    <button class="chip-btn chip-clear" id="clear-bet">
+                        <span class="chip-value">✕</span>
+                    </button>
+                </div>
             </div>
         </div>
         
         <button id="continue-button" style="display: none;">Continuar Jugando</button>
         
         <div id="messages" class="messages"></div>
+        
+        <div id="winner-modal" class="winner-modal hidden">
+            <div class="winner-content">
+                <div class="winner-crown">👑</div>
+                <h2 id="winner-title" class="winner-title">¡Victoria!</h2>
+                <p id="winner-name" class="winner-name"></p>
+                <div id="winner-hand" class="winner-hand"></div>
+                <div id="winner-amount" class="winner-amount"></div>
+                <button id="continue-button" class="continue-button">Continuar</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

@@ -33,14 +33,15 @@ export class PokerUI {
     private callButton: HTMLButtonElement | null = document.getElementById('call-button') as HTMLButtonElement;
     private allinButton: HTMLButtonElement | null = document.getElementById('allin-button') as HTMLButtonElement;
     private raiseButton: HTMLButtonElement | null = document.getElementById('raise-button') as HTMLButtonElement;
-    private raiseAmountInput: HTMLInputElement | null = document.getElementById('raise-amount') as HTMLInputElement;
     private continueButton: HTMLButtonElement | null = document.getElementById('continue-button') as HTMLButtonElement;
+    private currentBetAmount: number = 0;
     private playerActionResolver: ((value: { type: string; amount?: number }) => void) | null = null;
     private continueResolver: (() => void) | null = null;
 
     constructor() {
         this.disableActionButtons();
         this.setupContinueButton();
+        this.setupChipButtons();
     }
 
     private setupContinueButton() {
@@ -51,6 +52,32 @@ export class PokerUI {
                     this.continueResolver = null;
                 }
             });
+        }
+    }
+
+    private setupChipButtons(): void {
+        // Configurar botones de fichas
+        const chipButtons = document.querySelectorAll('.chip-btn[data-value]');
+        chipButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const value = parseInt((btn as HTMLElement).getAttribute('data-value') || '0', 10);
+                this.currentBetAmount += value;
+                this.updateBetDisplay();
+            });
+        });
+
+        // Botón de limpiar apuesta
+        const clearBtn = document.getElementById('clear-bet');
+        clearBtn?.addEventListener('click', () => {
+            this.currentBetAmount = 0;
+            this.updateBetDisplay();
+        });
+    }
+
+    private updateBetDisplay(): void {
+        const betAmountEl = document.getElementById('current-bet-amount');
+        if (betAmountEl) {
+            betAmountEl.textContent = `${this.currentBetAmount}€`;
         }
     }
 
@@ -259,12 +286,13 @@ export class PokerUI {
     }
 
     private handleRaise = () => {
-        const amount = this.raiseAmountInput ? parseInt(this.raiseAmountInput.value, 10) : undefined;
-        if (amount && amount > 0) {
+        if (this.currentBetAmount > 0) {
             this.soundEffects.playChip();
-            this.resolvePlayerAction({ type: 'raise', amount });
+            this.resolvePlayerAction({ type: 'raise', amount: this.currentBetAmount });
+            this.currentBetAmount = 0;
+            this.updateBetDisplay();
         } else {
-            this.log('Cantidad de subida inválida.');
+            this.log('Debes seleccionar una cantidad para subir.');
         }
     }
 
@@ -299,16 +327,22 @@ export class PokerUI {
             this.allinButton.disabled = (playerStack === 0);
         }
 
+        const canRaiseAmount = canRaise && playerStack > minCall;
+        
         if (this.raiseButton) {
-            this.raiseButton.disabled = !canRaise || playerStack <= minCall;
+            this.raiseButton.disabled = !canRaiseAmount;
         }
         
-        if (this.raiseAmountInput) {
-            this.raiseAmountInput.disabled = !canRaise || playerStack <= minCall;
-            const theoreticalMinTotalRaise = lastBet + minRaise;
-            this.raiseAmountInput.min = theoreticalMinTotalRaise.toString();
-            this.raiseAmountInput.value = theoreticalMinTotalRaise.toString();
-            this.raiseAmountInput.max = playerStack.toString();
+        // Habilitar/deshabilitar fichas según si se puede subir
+        const chipButtons = document.querySelectorAll('.chip-btn');
+        chipButtons.forEach(btn => {
+            (btn as HTMLButtonElement).disabled = !canRaiseAmount;
+        });
+        
+        // Resetear la apuesta actual cuando se habilitan los botones
+        if (canRaiseAmount) {
+            this.currentBetAmount = 0;
+            this.updateBetDisplay();
         }
 
         if (this.callButton) {
@@ -322,7 +356,13 @@ export class PokerUI {
         if (this.callButton) this.callButton.disabled = true;
         if (this.allinButton) this.allinButton.disabled = true;
         if (this.raiseButton) this.raiseButton.disabled = true;
-        if (this.raiseAmountInput) this.raiseAmountInput.disabled = true;
+        
+        // Deshabilitar fichas
+        const chipButtons = document.querySelectorAll('.chip-btn');
+        chipButtons.forEach(btn => {
+            (btn as HTMLButtonElement).disabled = true;
+        });
+        
         if (this.callButton) this.callButton.textContent = this.translations.callButton;
     }
 
@@ -447,6 +487,30 @@ export class PokerUI {
 
     displayShowdownMessage(): void {
         this.log(this.translations.showdownMessage);
+    }
+
+    showWinnerModal(winnerName: string, handDescription: string, amount: number): void {
+        const modal = document.getElementById('winner-modal');
+        const winnerNameEl = document.getElementById('winner-name');
+        const winnerHandEl = document.getElementById('winner-hand');
+        const winnerAmountEl = document.getElementById('winner-amount');
+        const continueBtn = document.getElementById('continue-button');
+
+        if (modal && winnerNameEl && winnerHandEl && winnerAmountEl && continueBtn) {
+            winnerNameEl.textContent = winnerName;
+            winnerHandEl.textContent = handDescription;
+            winnerAmountEl.textContent = `+${amount}€`;
+            
+            modal.classList.remove('hidden');
+
+            // Configurar el botón de continuar
+            const handleContinue = () => {
+                modal.classList.add('hidden');
+                continueBtn.removeEventListener('click', handleContinue);
+            };
+            
+            continueBtn.addEventListener('click', handleContinue);
+        }
     }
 
     limpiarTablero(): void {
