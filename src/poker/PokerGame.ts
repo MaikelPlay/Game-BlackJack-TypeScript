@@ -381,6 +381,11 @@ export class PokerGame {
             winner.stack += totalWinnings;
             this.ui.log(`${winner.name} gana el bote de ${totalWinnings}€.`);
             console.log(`[GAME] Winner by default: ${winner.name}`);
+            
+            // Mostrar modal de victoria
+            setTimeout(() => {
+                this.ui.showWinnerModal(winner.name, 'Victoria por abandono', totalWinnings);
+            }, 1500);
         } else {
             // Evaluar manos de todos los jugadores activos
             const evaluations = playersStillInHand.map(player => ({
@@ -413,6 +418,14 @@ export class PokerGame {
                 this.ui.log(`${winner.name} gana ${winAmount.toFixed(0)}€ con ${bestEval.description}!`);
                 console.log(`[GAME] Winner: ${winner.name} with ${bestEval.description}`);
             });
+            
+            // Mostrar modal de victoria (solo para el primer ganador si hay empate)
+            setTimeout(() => {
+                const displayName = winners.length > 1 
+                    ? winners.map(w => w.name).join(' y ')
+                    : winners[0].name;
+                this.ui.showWinnerModal(displayName, bestEval.description, winAmount);
+            }, 1500);
         }
         
         this.pots = [];
