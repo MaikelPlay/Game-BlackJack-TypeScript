@@ -16,7 +16,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: clamp(15px, 3vh, 25px) clamp(10px, 2vw, 20px) 70px;
+    padding: clamp(15px, 3vh, 25px) clamp(10px, 2vw, 20px) 48px;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
@@ -126,7 +126,7 @@ body {
     font-size: clamp(0.9rem, 1.8vw, 1.1rem);
     color: #ffd700;
     text-shadow: 0 0 10px rgba(255,215,0,0.5);
-    margin-bottom: 3px;
+    margin-bottom: 1px;
     text-align: center;
 }
 
@@ -134,7 +134,7 @@ body {
     font-size: clamp(0.85rem, 1.7vw, 1rem);
     color: #00ff00;
     font-weight: 700;
-    margin-bottom: 3px;
+    margin-bottom: 1px;
     text-shadow: 0 0 8px rgba(0,255,0,0.4);
     text-align: center;
 }
@@ -143,10 +143,10 @@ body {
     color: #ffc107;
     font-weight: 700;
     font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     text-shadow: 0 0 8px rgba(255,193,7,0.4);
     text-align: center;
-    min-height: 18px;
+    min-height: 16px;
 }
 
 .player-area-poker .blind-indicator {
@@ -176,7 +176,7 @@ body {
 .player-area-poker .player-cards {
     display: flex;
     gap: clamp(5px, 1vw, 8px);
-    margin-top: clamp(6px, 1vh, 10px);
+    margin-top: clamp(3px, 0.6vh, 6px);
     justify-content: center;
 }
 
@@ -298,7 +298,7 @@ body {
         0 0 15px rgba(255,215,0,0.8),
         1px 1px 3px rgba(0,0,0,0.9);
     letter-spacing: 1px;
-    transform: translateY(-50px);
+    transform: translateY(-20px);
 }
 
 .phase-indicator {
@@ -359,12 +359,12 @@ body {
     left: 0;
     right: 0;
     display: flex;
-    gap: 8px;
+    gap: clamp(15px, 3vw, 30px);
     background: 
         linear-gradient(135deg, 
             rgba(0,0,0,0.95) 0%, 
             rgba(20,20,20,0.9) 100%);
-    padding: 10px 15px;
+    padding: 5px clamp(15px, 3vw, 40px);
     border-radius: 0;
     border-top: 2px solid rgba(255,215,0,0.4);
     box-shadow: 
@@ -376,16 +376,200 @@ body {
     align-items: center;
 }
 
+.action-buttons-left {
+    display: flex;
+    gap: clamp(6px, 1.2vw, 10px);
+    align-items: center;
+    justify-content: center;
+}
+
+.betting-section {
+    display: flex;
+    gap: clamp(8px, 1.5vw, 12px);
+    align-items: center;
+    justify-content: center;
+}
+
+.bet-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    background: rgba(0,0,0,0.6);
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 2px solid rgba(255,215,0,0.3);
+}
+
+.bet-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.bet-amount {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: #00ff00;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(0,255,0,0.5);
+    min-width: 45px;
+    text-align: center;
+}
+
+.chips-container {
+    display: flex;
+    gap: clamp(6px, 1.2vw, 10px);
+    align-items: center;
+    justify-content: center;
+}
+
+.chip-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 4px 12px rgba(0,0,0,0.7),
+        inset 0 2px 5px rgba(255,255,255,0.3),
+        inset 0 -2px 5px rgba(0,0,0,0.3);
+    border: none;
+}
+
+/* Diseño de ficha de poker con borde decorativo */
+.chip-btn::before {
+    content: '';
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,0.3);
+    animation: rotate 20s linear infinite;
+}
+
+.chip-btn::after {
+    content: '';
+    position: absolute;
+    width: 65%;
+    height: 65%;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Ficha Roja - 10€ */
+.chip-btn[data-value="10"] {
+    background: 
+        radial-gradient(circle at 50% 50%, 
+            #ff6b6b 0%,
+            #ff5252 30%,
+            #e03131 60%,
+            #c92a2a 100%);
+    color: #fff;
+}
+
+/* Ficha Verde - 20€ */
+.chip-btn[data-value="20"] {
+    background: 
+        radial-gradient(circle at 50% 50%, 
+            #51cf66 0%,
+            #40c057 30%,
+            #37b24d 60%,
+            #2f9e44 100%);
+    color: #fff;
+}
+
+/* Ficha Azul - 50€ */
+.chip-btn[data-value="50"] {
+    background: 
+        radial-gradient(circle at 50% 50%, 
+            #4dabf7 0%,
+            #339af0 30%,
+            #228be6 60%,
+            #1971c2 100%);
+    color: #fff;
+}
+
+/* Ficha Dorada - 100€ */
+.chip-btn[data-value="100"] {
+    background: 
+        radial-gradient(circle at 50% 50%, 
+            #ffe066 0%,
+            #ffd43b 30%,
+            #fcc419 60%,
+            #fab005 100%);
+    color: #000;
+}
+
+/* Ficha Gris - Limpiar */
+.chip-clear {
+    background: 
+        radial-gradient(circle at 50% 50%, 
+            #adb5bd 0%,
+            #868e96 30%,
+            #6c757d 60%,
+            #495057 100%) !important;
+    color: #fff !important;
+    font-size: 1.1rem !important;
+}
+
+.chip-btn:hover:not(:disabled) {
+    transform: translateY(-5px) scale(1.15);
+    box-shadow: 
+        0 10px 25px rgba(0,0,0,0.8),
+        0 0 20px rgba(255,255,255,0.3),
+        inset 0 2px 5px rgba(255,255,255,0.4),
+        inset 0 -2px 5px rgba(0,0,0,0.4);
+}
+
+.chip-btn:hover:not(:disabled)::before {
+    animation-duration: 5s;
+}
+
+.chip-btn:active:not(:disabled) {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.chip-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(80%);
+}
+
+.chip-value {
+    text-shadow: 
+        0 1px 3px rgba(0,0,0,0.8),
+        0 0 5px rgba(255,255,255,0.2);
+    letter-spacing: 0.3px;
+    position: relative;
+    z-index: 1;
+}
+
+
+
 .poker-actions button {
     font-family: 'Cinzel', serif;
-    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-    padding: clamp(8px, 1vh, 10px) clamp(12px, 2vw, 18px);
-    border-radius: 8px;
+    font-size: clamp(0.6rem, 1.2vw, 0.7rem);
+    padding: clamp(5px, 0.7vh, 7px) clamp(9px, 1.4vw, 12px);
+    border-radius: 20px;
     border: 2px solid;
     cursor: pointer;
     font-weight: 800;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
@@ -461,16 +645,29 @@ body {
         0 0 30px rgba(255,169,77,0.4);
 }
 
-#raise-button {
+.raise-submit-btn {
     background: linear-gradient(145deg, #1971c2, #0c4a6e);
     color: white;
     border-color: #339af0;
     box-shadow: 
         0 6px 15px rgba(0,0,0,0.5),
         0 0 20px rgba(25,113,194,0.3);
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.6rem, 1.2vw, 0.7rem);
+    padding: clamp(5px, 0.7vh, 7px) clamp(9px, 1.4vw, 12px);
+    border-radius: 20px;
+    border: 2px solid #339af0;
+    cursor: pointer;
+    font-weight: 800;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
-#raise-button:hover:not(:disabled) {
+.raise-submit-btn:hover:not(:disabled) {
     background: linear-gradient(145deg, #1c7ed6, #1971c2);
     transform: translateY(-2px);
     box-shadow: 
@@ -478,95 +675,13 @@ body {
         0 0 30px rgba(28,126,214,0.4);
 }
 
-.raise-container {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-}
-
-.amount-control {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(20,20,0,0.75) 100%);
-    border: 2px solid #ffd700;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 
-        inset 0 2px 10px rgba(0,0,0,0.5),
-        0 0 15px rgba(255,215,0,0.2);
-}
-
-.amount-btn {
-    width: clamp(28px, 4vw, 35px);
-    height: clamp(32px, 4vh, 38px);
-    background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.1) 100%);
-    border: none;
-    border-right: 1px solid rgba(255,215,0,0.3);
-    color: #ffd700;
-    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
-    font-weight: 900;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    padding: 0;
-}
-
-.amount-btn.increase {
-    border-right: none;
-    border-left: 1px solid rgba(255,215,0,0.3);
-}
-
-.amount-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.2) 100%);
-    color: #fff;
-}
-
-.amount-btn:active:not(:disabled) {
-    background: linear-gradient(135deg, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.3) 100%);
-    transform: scale(0.95);
-}
-
-.amount-btn:disabled {
-    opacity: 0.3;
+.raise-submit-btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    filter: grayscale(100%);
 }
 
-.raise-container input {
-    width: clamp(60px, 10vw, 80px);
-    font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-    padding: clamp(6px, 0.8vh, 8px) clamp(4px, 0.5vw, 6px);
-    text-align: center;
-    background: transparent;
-    border: none;
-    color: #ffd700;
-    font-weight: 700;
-    font-family: 'Cinzel', serif;
-    outline: none;
-}
 
-/* Ocultar flechas nativas */
-.raise-container input::-webkit-inner-spin-button,
-.raise-container input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.raise-container input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-.raise-container input:focus {
-    outline: none;
-    border-color: #00ff00;
-    box-shadow: 
-        inset 0 2px 10px rgba(0,0,0,0.5),
-        0 0 25px rgba(0,255,0,0.4);
-}
 
 .player-area-poker .player-status {
     font-size: 0.8rem;
@@ -694,6 +809,178 @@ body {
 /* Messages - OCULTOS */
 .messages {
     display: none !important;
+}
+
+/* Winner Modal */
+.winner-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.winner-modal.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.winner-content {
+    background: 
+        linear-gradient(135deg, 
+            rgba(20,20,20,0.98) 0%, 
+            rgba(40,30,20,0.98) 50%,
+            rgba(20,20,20,0.98) 100%);
+    padding: clamp(30px, 5vh, 50px) clamp(40px, 6vw, 60px);
+    border-radius: 20px;
+    border: 4px solid #ffd700;
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.9),
+        0 0 80px rgba(255,215,0,0.6),
+        inset 0 2px 20px rgba(255,215,0,0.2);
+    text-align: center;
+    color: white;
+    animation: winnerAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 90vw;
+}
+
+@keyframes winnerAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(-100px) rotate(-10deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0);
+    }
+}
+
+.winner-crown {
+    font-size: clamp(3rem, 8vw, 5rem);
+    margin-bottom: 15px;
+    animation: crownBounce 1s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255,215,0,0.8));
+}
+
+@keyframes crownBounce {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.1);
+    }
+}
+
+.winner-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: #ffd700;
+    margin: 0 0 20px 0;
+    text-shadow: 
+        0 0 30px rgba(255,215,0,0.8),
+        0 0 60px rgba(255,215,0,0.4),
+        2px 2px 4px rgba(0,0,0,0.9);
+    letter-spacing: 2px;
+    animation: titleGlow 2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        text-shadow: 
+            0 0 30px rgba(255,215,0,0.8),
+            0 0 60px rgba(255,215,0,0.4),
+            2px 2px 4px rgba(0,0,0,0.9);
+    }
+    50% {
+        text-shadow: 
+            0 0 40px rgba(255,215,0,1),
+            0 0 80px rgba(255,215,0,0.6),
+            2px 2px 4px rgba(0,0,0,0.9);
+    }
+}
+
+.winner-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    color: #fff;
+    font-weight: 700;
+    margin: 0 0 25px 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+.winner-hand {
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    color: #ffd700;
+    font-weight: 600;
+    margin: 20px 0;
+    padding: 15px 25px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 15px;
+    border: 2px solid rgba(255,215,0,0.3);
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+.winner-amount {
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    color: #00ff00;
+    font-weight: 900;
+    margin: 20px 0 30px 0;
+    text-shadow: 
+        0 0 20px rgba(0,255,0,0.8),
+        0 0 40px rgba(0,255,0,0.4);
+    animation: amountPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes amountPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.continue-button {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    padding: clamp(12px, 2vh, 15px) clamp(30px, 5vw, 50px);
+    border-radius: 15px;
+    border: 3px solid #ffd700;
+    cursor: pointer;
+    font-weight: 800;
+    background: linear-gradient(145deg, #1971c2, #0c4a6e);
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 
+        0 8px 20px rgba(0,0,0,0.6),
+        0 0 30px rgba(25,113,194,0.4);
+    margin-top: 10px;
+}
+
+.continue-button:hover {
+    background: linear-gradient(145deg, #1c7ed6, #1971c2);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        0 12px 30px rgba(0,0,0,0.7),
+        0 0 40px rgba(28,126,214,0.6);
+    border-color: #fff;
 }
 
 .messages p {
@@ -824,26 +1111,32 @@ body {
     }
 
     .poker-actions {
-        flex-wrap: wrap;
-        gap: 4px;
+        flex-direction: column;
+        gap: 6px;
         padding: 6px 8px;
     }
 
+    .action-buttons-left {
+        width: 100%;
+        justify-content: space-around;
+        gap: 4px;
+    }
+
     .poker-actions button {
-        flex: 1 1 45%;
         padding: 6px 8px;
         font-size: 0.6rem;
         letter-spacing: 0.5px;
     }
 
-    .raise-container {
+    .betting-section {
         width: 100%;
-        flex: 1 1 100%;
         justify-content: center;
+        gap: 8px;
     }
 
-    .raise-container input {
-        width: 70px;
-        font-size: 0.85rem;
+    .chip-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 0.7rem;
     }
 }
